@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-idna-ssl = "*"
-requests = "*"
 aiogram = "*"
 aiohttp = "*"
+idna-ssl = "*"
+requests = "*"
+timeloop = "*"
 
 [dev-packages]
 pytest = "*"
