@@ -10,8 +10,8 @@ PROJECT_NAME = 'moshnar-bot'
 APP_HOST = "localhost"
 APP_PORT = os.getenv('PORT') or 8080
 
-WEBHOOK_HOST = f'https://{PROJECT_NAME}.herokuapp.com/'
-WEBHOOK_PATH = f'/webhook/{API_TOKEN}'
+WEBHOOK_HOST = f'https://{PROJECT_NAME}.herokuapp.com'
+WEBHOOK_PATH = f'/{API_TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 
@@ -56,7 +56,6 @@ if __name__ == '__main__':
         webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
         on_shutdown=on_shutdown,
-        skip_updates=True,
         host=APP_HOST,
         port=APP_PORT,
     )
