@@ -9,15 +9,14 @@ PROJECT_NAME = 'moshnar-bot'
 
 APP_HOST = "localhost"
 APP_PORT = os.getenv('PORT') or 8080
-# PROXY_URL = 'http://167.71.105.68:8080'
 
 WEBHOOK_HOST = f'https://{PROJECT_NAME}.herokuapp.com/'
 WEBHOOK_PATH = f'/webhook/{API_TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
+
 logging.basicConfig(level=logging.INFO)
 
-# bot = Bot(token=API_TOKEN, proxy=PROXY_URL)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 

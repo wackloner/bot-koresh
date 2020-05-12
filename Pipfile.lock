@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "609eca70fcb0a222334452bceb9bd31c192a64eb8b958deae9b11ec7ce0ee29b"
+            "sha256": "1d7fe88dfd82093ae50cf40d748ff755a69d9706378ba4e123a7ddc631e7af97"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -37,15 +37,8 @@
                 "sha256:ae55bac364c405caa23a4f2d6cfecc6a0daada500274ffca4a9230e7129eac59",
                 "sha256:b778ce0c909a2653741cb4b1ac7015b5c130ab9c897611df43ae6a58523cb965"
             ],
-            "version": "==3.6.2"
-        },
-        "aiohttp-socks": {
-            "hashes": [
-                "sha256:5e5638d0e472baa441eab7990cf19e034960cc803f259748cc359464ccb3c2d6",
-                "sha256:ccd483d7677d7ba80b7ccb738a9be27a3ad6dce4b2756509bc71c9d679d96105"
-            ],
             "index": "pypi",
-            "version": "==0.3.9"
+            "version": "==3.6.2"
         },
         "async-timeout": {
             "hashes": [
@@ -88,6 +81,13 @@
                 "sha256:a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"
             ],
             "version": "==2.9"
+        },
+        "idna-ssl": {
+            "hashes": [
+                "sha256:a933e3bb13da54383f9e8f35dc4f9cb9eb9b3b78c6b36f311254d6d0d92c6c7c"
+            ],
+            "index": "pypi",
+            "version": "==1.1.0"
         },
         "multidict": {
             "hashes": [
