@@ -15,11 +15,11 @@ async def send_tx_info_full(t: Tracking, tx_info: TransactionInfo, msg_before: O
         output = f'{msg_before}\n\n' + output
     if msg_after is not None:
         output += f'\n\n{msg_after}'
+
     return await comment_tracking(t, output)
 
 
 async def comment_tracking(t: Tracking, msg: str):
-    logging.info(f'comment {t.address}')
-    res = await t.trigger_message.reply(msg, parse_mode='HTML')
-    logging.info(f'sent')
-    return res
+    logging.debug(f'Commenting... {t.address}')
+
+    return await t.trigger_message.reply(msg, parse_mode='HTML', disable_web_page_preview=True)

@@ -5,20 +5,22 @@ from aiogram.utils import executor
 from aiogram import Bot, Dispatcher, types
 from datetime import datetime
 
+from context import tracking_manager
 from settings import API_TOKEN
-from tasks import schedule_updater
+from tasks import schedule_trackings_updater
 from tracking import TrackingStatus, Tracking
-from tracking_manager import start_tracking, get_all_trackings
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
+# TODO: maybe put status inside of tx_info
 
 GREETINGS = [
     'Че по мошне))',
     'Залетает)))))',
     'Ха-тим)',
-    'Мас-тер Карди-ГАН )'
+    'Мас-тер Карди-ГАН )',
+    'Хыыыыы'
 ]
 
 
@@ -52,7 +54,7 @@ async def track_address(message: types.Message):
 
     now = datetime.today()
     for t in [Tracking(address, now, message, TrackingStatus.NOT_STARTED, now, 0) for address in args.split()]:
-        await start_tracking(t)
+        await tracking_manager.start_tracking_async(t)
 
 
 # TODO: show tracked info (separate command)
@@ -60,7 +62,7 @@ async def track_address(message: types.Message):
 async def show_trackings(message: types.Message):
     logging.info(f'{message.text}')
 
-    tracked = get_all_trackings()
+    tracked = tracking_manager.get_all_trackings()
     msg = 'Хз, я чисто чиллю' if tracked == [] else f'Палю адреса: {list(map(lambda t: t.address, tracked))}'
     await message.answer(msg)
 
@@ -73,5 +75,5 @@ async def echo(message: types.Message):
 
 
 if __name__ == '__main__':
-    schedule_updater()
+    schedule_trackings_updater()
     executor.start_polling(dp)

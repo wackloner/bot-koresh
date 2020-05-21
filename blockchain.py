@@ -9,6 +9,7 @@ from str_utils import timedelta_to_str
 from tracking import TrackingStatus, TransactionInfo
 
 
+# TODO: refactor to BlockchainClient class or something
 def check_address(address: str) -> Tuple[TrackingStatus, Optional[TransactionInfo]]:
     response = requests.get(f'https://blockchain.info/rawaddr/{address}')
     if response.status_code != 200:
