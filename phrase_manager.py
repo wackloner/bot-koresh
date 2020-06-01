@@ -103,3 +103,13 @@ class PhraseManager:
     @classmethod
     def kardigun_rhyme(cls) -> str:
         return random.choice(cls.KARDIGUN_RHYMES)
+
+    LOVE_420 = [
+        'Я люблю дуть плюхи)))',
+        'Чел, ты только представь, какой толерок у бота ;)'
+    ]
+
+    @classmethod
+    def love_420(cls) -> str:
+        return random.choice(cls.LOVE_420)
+

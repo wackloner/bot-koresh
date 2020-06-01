@@ -5,5 +5,6 @@ source .env
 
 while true
 do
-  echo python3 main.py
+   /usr/bin/python3.8 main.py
+   sleep 1
 done

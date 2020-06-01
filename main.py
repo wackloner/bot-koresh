@@ -297,12 +297,16 @@ def default_message_handler(update: Update, context: CallbackContext):
             update.message.reply_text(PhraseManager.thanks())
             return
 
+        if have_starts(low_tokens, ['еблан', 'пидор', 'маня']):
+            update.message.reply_text('Да сорри, я прост чиллил(')
+            return
+
         if have_starts(low_tokens, ['мошн', 'помошн']):
             update.message.reply_text('Не ну так-то я бы помошнил))')
             return
 
-        if have_starts(low_tokens, ['любишь', 'нравится', 'дудо']):
-            update.message.reply_text('Я люблю дуть плюхи)))')
+        if have_starts(low_tokens, ['любишь', 'нравится', 'дуть', 'дуешь', 'дудо', 'dudo']):
+            update.message.reply_text(PhraseManager.love_420())
             return
 
         update.message.reply_text(PhraseManager.ans())

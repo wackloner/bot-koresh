@@ -19,5 +19,5 @@ def get_addresses_for_chat(context: CallbackContext):
 
 
 def increase_messages_count(context: CallbackContext):
-    context.chat_data['msg_cnt'] = context.chat_data.get('msg_cnt', 32) + 1
+    context.chat_data['msg_cnt'] = context.chat_data.get('msg_cnt', 0) + 1
     return context.chat_data['msg_cnt']
