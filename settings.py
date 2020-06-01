@@ -1,13 +1,45 @@
 import logging
+import os
 from datetime import timedelta
 
-API_TOKEN = '1221172107:AAG7GK7OBKMXLASZpbb4fME_SztgOoECF6o'
+from dotenv import load_dotenv
 
+
+load_dotenv()
+
+
+API_TOKEN = os.environ['API_TOKEN']
+ADMIN_CHAT_ID: int = int(os.environ['ADMIN_CHAT_ID'])
+
+PROXY_URL = 'socks5h://localhost:9050'
+
+
+# TODO: config
 CONFIRMATIONS_NEEDED = 2
+
+# TODO: config
 OLD_TRANSACTION_AGE = timedelta(hours=6)
 
-POLLING_DELAY = timedelta(seconds=60)
+# TODO: try faster
+TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=120)
+
 TTL_IN_STATUS = timedelta(hours=2)
 
+SLADKO_EVERY_NTH_MESSAGE = 35
 
-logging.basicConfig(format='[%(asctime)s][%(levelname)s] %(message)s', datefmt='%I:%M:%S', level=logging.INFO)
+LOGGING_LEVEL = logging.DEBUG
+TELEGRAM_API_LOGGING_LEVEL = logging.INFO
+
+UPDATER_ARGS = {
+    # 'proxy_url': PROXY_URL
+}
+
+logging.basicConfig(
+    format='[%(asctime)s][%(levelname)s][%(filename)s:%(lineno)d] %(message)s',
+    datefmt='%I:%M:%S',
+    level=LOGGING_LEVEL
+)
+
+# logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+# logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+

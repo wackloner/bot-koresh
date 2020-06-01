@@ -1,15 +1,15 @@
--i https://pypi.python.org/simple
 aiogram==2.8
 aiohttp==3.6.2
 async-timeout==3.0.1
 attrs==19.3.0
-babel==2.8.0
+Babel==2.8.0
 certifi==2020.4.5.1
 chardet==3.0.4
-idna-ssl==1.1.0
 idna==2.9
+idna-ssl==1.1.0
 multidict==4.7.5
 pytz==2020.1
 requests==2.23.0
+timeloop==1.0.2
 urllib3==1.25.9
 yarl==1.4.2

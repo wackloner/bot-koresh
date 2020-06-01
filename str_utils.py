@@ -1,10 +1,14 @@
 from datetime import timedelta
+from typing import List
 
 from settings import CONFIRMATIONS_NEEDED
 from tracking import TransactionInfo
 
 
 HASH_FOOTPRINT_SIZE = 20
+
+UNCONF_EMOJI = '\u274c'
+CONF_EMOJI = '\u2705'
 
 
 def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
@@ -43,11 +47,24 @@ def timedelta_to_str(t: timedelta) -> str:
     return res.strip()
 
 
+def get_addr_url(addr: str) -> str:
+    return f'https://www.blockchain.com/btc/address/{addr}'
+
+
+def get_addr_html_url(addr: str) -> str:
+    return f'<a href=\'{get_addr_url(addr)}\'>{addr}</a>'
+
+
+def get_addr_list_html_str(addrs: List[str]) -> str:
+    return '\n'.join(map(get_addr_html_url, addrs))
+
+
 # TODO: colors
 def tx_info_to_str(info: TransactionInfo) -> str:
-    confirmed = 'confirmed' if info.confirmations_count >= CONFIRMATIONS_NEEDED else 'unconfirmed'
-    return f'<b>{confirmed}</b>\ntx <i>{get_tx_url_html_str(info.hash)}</i>\n' \
-           + f'from <code>{info.created_at}</code>\nconfirmations: <code>{info.confirmations_count}</code>'
+    confirmed = CONF_EMOJI if info.confirmations_count >= CONFIRMATIONS_NEEDED else UNCONF_EMOJI
+    return f'{confirmed}<pre>[{info.confirmations_count} confirmations]</pre>\n' \
+           f'<pre>[tx</pre> {get_tx_url_html_str(info.hash)}<pre>]</pre>\n' \
+           f'<pre>[created {info.created_at}]</pre>\n'
 
 
 def get_tx_url(tx_hash: str) -> str:

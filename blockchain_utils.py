@@ -8,10 +8,43 @@ from settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED
 from str_utils import timedelta_to_str
 from tracking import TrackingStatus, TransactionInfo
 
-
 # TODO: refactor to BlockchainClient class or something
+from validator import is_valid_bitcoin_address
+
+
+def get_unconfirmed_txs():
+    response = requests.get(f'https://blockchain.info/unconfirmed-transactions?format=json')
+    res = response.json()['txs']
+
+    logging.debug(f'{len(res)} unconfirmed txs in total')
+
+    return res
+
+
+# TODO: random version
+def get_last_unconfirmed_tx():
+    res = get_unconfirmed_txs()[0]
+
+    logging.debug(f'last_unconfirmed_tx = {res}')
+
+    return res
+
+
+def get_random_address_with_unconfirmed_tx() -> str:
+    last_tx = get_last_unconfirmed_tx()
+    return next((out.get('addr') for out in last_tx.get('out', [])), None)
+
+
 def check_address(address: str) -> Tuple[TrackingStatus, Optional[TransactionInfo]]:
+    if not is_valid_bitcoin_address(address):
+        logging.debug(f'--> {address}')
+        return TrackingStatus.INVALID_HASH, None
+
+    logging.debug(f'get --> {address}')
     response = requests.get(f'https://blockchain.info/rawaddr/{address}')
+    logging.info(response)
+    if response.status_code == 429:
+        logging.error(f'{response.headers}')
     if response.status_code != 200:
         logging.error(f'Failed to check {address}')
         return TrackingStatus.FAILED, None

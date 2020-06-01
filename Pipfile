@@ -4,9 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aiogram = "*"
 aiohttp = "*"
+base58 = "*"
 idna-ssl = "*"
+python-dotenv = "*"
+python-telegram-bot = "*"
+PySocks = "*"
 requests = "*"
 timeloop = "*"
 
