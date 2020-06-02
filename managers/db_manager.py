@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from telegram import Bot
 
-from settings import ADMIN_CHAT_ID
-from tracking_manager import TrackingManager
+from bot.settings import ADMIN_CHAT_ID
+from managers.tracking_manager import TrackingManager
 
 
 @dataclass

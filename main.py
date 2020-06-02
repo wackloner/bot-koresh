@@ -7,18 +7,18 @@ from typing import Optional, List
 from telegram import Update, ChatAction, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
-from blockchain_utils import get_random_address_with_unconfirmed_tx
-from callback_context_utils import get_addresses_for_chat, increase_messages_count
-from context import Context, App
+from managers.blockchain_utils import get_random_address_with_unconfirmed_tx
+from utils.callback_context_utils import get_addresses_for_chat, increase_messages_count
+from bot.context import Context, App
 from messages import send_sladko, send_sesh, send_message
-from phrase_manager import PhraseManager
-from settings import SLADKO_EVERY_NTH_MESSAGE
+from managers.phrase_manager import PhraseManager
+from bot.settings import SLADKO_EVERY_NTH_MESSAGE
 
 # TODO: implement get_latest_unconfirmed_transaction for tests
 
 # TODO: maybe put status inside of tx_info
-from str_utils import tx_info_to_str
-from validator import is_valid_bitcoin_address
+from utils.str_utils import tx_info_to_str
+from bot.validator import is_valid_bitcoin_address
 
 # TODO: retries in requests
 

@@ -1,8 +1,8 @@
 from datetime import timedelta
 from typing import List
 
-from settings import CONFIRMATIONS_NEEDED
-from tracking import TransactionInfo
+from bot.settings import CONFIRMATIONS_NEEDED
+from model.tracking import TransactionInfo
 
 
 HASH_FOOTPRINT_SIZE = 20

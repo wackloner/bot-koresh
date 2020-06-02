@@ -4,12 +4,12 @@ from typing import Tuple, Optional, Dict
 
 import requests
 
-from settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED
-from str_utils import timedelta_to_str
-from tracking import TrackingStatus, TransactionInfo
+from bot.settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED
+from utils.str_utils import timedelta_to_str
+from model.tracking import TrackingStatus, TransactionInfo
 
 # TODO: refactor to BlockchainClient class or something
-from validator import is_valid_bitcoin_address
+from bot.validator import is_valid_bitcoin_address
 
 
 def get_unconfirmed_txs():

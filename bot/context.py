@@ -6,13 +6,13 @@ from typing import Optional
 from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 
-from blockchain_utils import check_address
-from db_manager import DbManager
+from managers.blockchain_utils import check_address
+from managers.db_manager import DbManager
 from messages import send_tx_info
-from phrase_manager import PhraseManager
-from settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
-from tracking import TrackingStatus
-from tracking_manager import TrackingManager
+from managers.phrase_manager import PhraseManager
+from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
+from model.tracking import TrackingStatus
+from managers.tracking_manager import TrackingManager
 
 
 class App:

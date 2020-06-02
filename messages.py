@@ -3,8 +3,8 @@ from typing import Optional
 
 from telegram import Bot
 
-from str_utils import tx_info_to_str
-from tracking import Tracking, TransactionInfo
+from utils.str_utils import tx_info_to_str
+from model.tracking import Tracking, TransactionInfo
 
 
 def send_message(context, update, msg):

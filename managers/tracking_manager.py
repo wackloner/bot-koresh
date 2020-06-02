@@ -5,12 +5,12 @@ from typing import Optional, List, Dict
 from telegram import Message, ParseMode
 from telegram.ext import CallbackContext
 
-from blockchain_utils import check_address
-from callback_context_utils import remove_address_for_chat, add_address_for_chat
+from managers.blockchain_utils import check_address
+from utils.callback_context_utils import remove_address_for_chat, add_address_for_chat
 from messages import comment_tracking, send_tx_info, send_tx_info_full
-from settings import TTL_IN_STATUS
-from str_utils import timedelta_to_str, get_addr_html_url
-from tracking import Tracking, TrackingStatus, TransactionInfo
+from bot.settings import TTL_IN_STATUS
+from utils.str_utils import timedelta_to_str, get_addr_html_url
+from model.tracking import Tracking, TrackingStatus, TransactionInfo
 
 
 # TODO: check thread-safety
@@ -29,7 +29,7 @@ class TrackingManager:
         t = self.init_tracking(t)
 
         if t is not None:
-            from context import App
+            from bot.context import App
             App.app_context.run_info_updater()
         return t
 
@@ -60,7 +60,7 @@ class TrackingManager:
 
     # TODO: get only address as arg and then create tracking
     def init_tracking(self, t: Tracking) -> Optional[Tracking]:
-        from context import App
+        from bot.context import App
 
         status, tx_info = check_address(t.address)
         self.update_tracking(t, status, tx_info)
