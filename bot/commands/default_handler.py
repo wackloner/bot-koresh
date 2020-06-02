@@ -9,7 +9,7 @@ from bot.commands.split_teams import is_splitting, split_into_teams
 from bot.context import App
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
-from messages import send_sesh
+from utils.messages import send_sesh
 
 
 def have_starts(tokens: List[str], starts: List[str]) -> bool:

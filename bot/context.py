@@ -8,7 +8,7 @@ from telegram.ext import Updater, CallbackContext, Job
 
 from managers.blockchain_utils import check_address
 from managers.db_manager import DbManager
-from messages import send_tx_info
+from utils.messages import send_tx_info
 from managers.phrase_manager import PhraseManager
 from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
 from model.tracking import TrackingStatus

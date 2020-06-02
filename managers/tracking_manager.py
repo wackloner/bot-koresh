@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 
 from managers.blockchain_utils import check_address
 from utils.callback_context_utils import remove_address_for_chat, add_address_for_chat
-from messages import comment_tracking, send_tx_info, send_tx_info_full
+from utils.messages import comment_tracking, send_tx_info, send_tx_info_full
 from bot.settings import TTL_IN_STATUS
 from utils.str_utils import timedelta_to_str, get_addr_html_url
 from model.tracking import Tracking, TrackingStatus, TransactionInfo

@@ -5,8 +5,8 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 from bot.context import App
-from bot.settings import SLADKO_EVERY_NTH_MESSAGE
-from messages import send_sladko
+from bot.settings import SLADKO_EVERY_NTH_MESSAGE, COMMAND_RETRIES
+from utils.messages import send_sladko
 from utils.callback_context_utils import increase_messages_count
 
 
@@ -24,9 +24,6 @@ def send_action(action):
     return decorator
 
 
-RETRIES = 2
-
-
 def moshnar_command(command_handler):
     @wraps(command_handler)
     def wrapper(*args, **kwargs):
@@ -35,7 +32,7 @@ def moshnar_command(command_handler):
 
         logging.debug(f"Handling: '{update.message.text}'")
 
-        for i in range(RETRIES + 1):
+        for i in range(COMMAND_RETRIES + 1):
             try:
                 res = command_handler(update, context)
                 msg_cnt = increase_messages_count(context)

@@ -59,7 +59,7 @@ def get_addr_list_html_str(addrs: List[str]) -> str:
     return '\n'.join(map(get_addr_html_url, addrs))
 
 
-# TODO: colors
+# TODO: fix newlines
 def tx_info_to_str(info: TransactionInfo) -> str:
     confirmed = CONF_EMOJI if info.confirmations_count >= CONFIRMATIONS_NEEDED else UNCONF_EMOJI
     return f'{confirmed}<pre>[{info.confirmations_count} confirmations]</pre>\n' \
