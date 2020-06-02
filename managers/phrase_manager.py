@@ -71,17 +71,17 @@ class PhraseManager:
     def thanks(cls) -> str:
         return random.choice(cls.THANKS)
 
-    NO = [
+    DEFAULT = [
         'Да хз)',
-        'Да хз, братишка))',
+        'Это всё конечно очень пиздато, но Я ВАЩЕ ХЗ о чем ты браток)))))',
         'Да бля чел))',
         'Завали плиз)',
         'Если ты на меня нагнал ща, то иди на хуй))'
     ]
 
     @classmethod
-    def ans(cls) -> str:
-        return random.choice(cls.NO)
+    def default(cls) -> str:
+        return random.choice(cls.DEFAULT)
 
     NO_PROBLEM = [
         'Да на изичах)',
@@ -113,3 +113,11 @@ class PhraseManager:
     def love_420(cls) -> str:
         return random.choice(cls.LOVE_420)
 
+    NO_VIVOZ = [
+        'Та хз, вывозом здесь даже и не пахнет)',
+        'Лол ты не с тем ботом решил обсудить эту хуйню браток))'
+    ]
+
+    @classmethod
+    def no_vivoz(cls) -> str:
+        return random.choice(cls.NO_VIVOZ)
