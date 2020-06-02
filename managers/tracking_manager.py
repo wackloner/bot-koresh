@@ -5,7 +5,6 @@ from typing import Optional, List, Dict
 from telegram import Message, ParseMode
 from telegram.ext import CallbackContext
 
-from managers.blockchain_utils import check_address
 from utils.callback_context_utils import remove_address_for_chat, add_address_for_chat
 from utils.messages import comment_tracking, send_tx_info, send_tx_info_full
 from bot.settings import TTL_IN_STATUS
@@ -62,7 +61,7 @@ class TrackingManager:
     def init_tracking(self, t: Tracking) -> Optional[Tracking]:
         from bot.context import App
 
-        status, tx_info = check_address(t.address)
+        status, tx_info = App.app_context.blockchain_client.check_address(t.address)
         self.update_tracking(t, status, tx_info)
 
         # TODO: handle new statuses

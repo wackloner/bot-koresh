@@ -42,49 +42,53 @@ def split_into_teams(update: Update, context: CallbackContext):
 
     text = update.message.text
 
-    if ':' in text:
-        talk, names_str = text.split(':')
-        names = names_str.split()
-    else:
-        lines = text.split('\n')
-        talk = lines[0]
-        names = lines[1:]
-
-    # TODO: check team_cnt > players_cnt
-    logging.debug(talk)
-    logging.debug(names)
-
-    teams_cnt = get_teams_cnt(talk)
-
-    if teams_cnt is None:
-        teams_cnt = 2
-
-    if teams_cnt <= 0:
-        send_message(context, update, 'Ну это хуйня какая-то сорри')
-        return
-
-    if teams_cnt > len(names):
-        logging.debug(f'teams_cnt = {teams_cnt}, names_cnt = {len(names)}')
-
-        send_message(context, update, 'Игроков маловато чёт')
-        return
-
-    need_generate_captains = any(map(is_captains, talk.split()))
-
-    teams = split_people(names, teams_cnt)
-    team_num = 1
-
-    context.bot.send_message(update.message.chat.id, PhraseManager.no_problem())
-    for team in teams:
-        if need_generate_captains:
-            captain = random.choice(team)
-            team.remove(captain)
-            msg = f'Команда #{team_num}\n' + f'{captain} - Капитан\n' + '\n'.join(team) + '\n'
+    try:
+        if ':' in text:
+            talk, names_str = text.split(':')
+            names = names_str.split()
         else:
-            msg = f'Команда #{team_num}\n' + '\n'.join(team) + '\n'
+            lines = text.split('\n')
+            talk = lines[0]
+            names = lines[1:]
 
-        team_num += 1
-        context.bot.send_message(update.message.chat.id, msg)
+        # TODO: check team_cnt > players_cnt
+        logging.debug(talk)
+        logging.debug(names)
+
+        teams_cnt = get_teams_cnt(talk)
+
+        if teams_cnt is None:
+            teams_cnt = 2
+
+        if teams_cnt <= 0:
+            send_message(context, update, 'Ну это хуйня какая-то сорри')
+            return
+
+        if teams_cnt > len(names):
+            logging.debug(f'teams_cnt = {teams_cnt}, names_cnt = {len(names)}')
+
+            send_message(context, update, 'Игроков маловато чёт')
+            return
+
+        need_generate_captains = any(map(is_captains, talk.split()))
+
+        teams = split_people(names, teams_cnt)
+        team_num = 1
+
+        context.bot.send_message(update.message.chat.id, PhraseManager.no_problem())
+        for team in teams:
+            if need_generate_captains:
+                captain = random.choice(team)
+                team.remove(captain)
+                msg = f'Команда #{team_num}\n' + f'{captain} - Капитан\n' + '\n'.join(team) + '\n'
+            else:
+                msg = f'Команда #{team_num}\n' + '\n'.join(team) + '\n'
+
+            team_num += 1
+            context.bot.send_message(update.message.chat.id, msg)
+
+    except Exception as e:
+        logging.error(e)
 
 
 def is_splitting(text: str) -> bool:

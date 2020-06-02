@@ -30,7 +30,7 @@ def moshnar_command(command_handler):
         update: Update = args[0]
         context: CallbackContext = args[1]
 
-        logging.debug(f"Handling: '{update.message.text}'")
+        logging.debug(f"Processing new input: '{update.message.text}'")
 
         for i in range(COMMAND_RETRIES + 1):
             try:
@@ -39,12 +39,11 @@ def moshnar_command(command_handler):
                 if msg_cnt % SLADKO_EVERY_NTH_MESSAGE == 0:
                     send_sladko(App.app_context.bot, update.message.chat.id)
 
+                # TODO: log execution time
                 logging.debug(f'Done, msg_cnt = {msg_cnt}')
 
                 return res
             except Exception as e:
                 logging.error(e)
-
-        # TODO: log execution time
 
     return wrapper

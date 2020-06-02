@@ -6,7 +6,7 @@ from typing import Optional
 from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 
-from managers.blockchain_utils import check_address
+from managers.blockchain_utils import BlockchainClient
 from managers.db_manager import DbManager
 from utils.messages import send_tx_info
 from managers.phrase_manager import PhraseManager
@@ -56,6 +56,8 @@ def update_trackings(context: CallbackContext):
 @dataclass
 class Context:
     tracking_manager: TrackingManager = field(default_factory=TrackingManager)
+    blockchain_client: BlockchainClient = field(default_factory=BlockchainClient)
+
     _job: Optional[Job] = field(default=None)
 
     @cached_property
