@@ -9,19 +9,18 @@ load_dotenv()
 
 
 API_TOKEN = os.environ['API_TOKEN']
-ADMIN_CHAT_ID: int = int(os.environ['ADMIN_CHAT_ID'])
-
 PROXY_URL = 'socks5h://localhost:9050'
+
+ADMIN_CHAT_ID: int = int(os.environ['ADMIN_CHAT_ID'])
 
 
 # TODO: config
 CONFIRMATIONS_NEEDED = 2
-
-# TODO: config
+COMMAND_RETRIES = 2
 OLD_TRANSACTION_AGE = timedelta(hours=6)
 
 # TODO: try faster
-TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=120)
+TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=60)
 
 TTL_IN_STATUS = timedelta(hours=2)
 
@@ -31,7 +30,7 @@ LOGGING_LEVEL = logging.DEBUG
 TELEGRAM_API_LOGGING_LEVEL = logging.INFO
 
 UPDATER_ARGS = {
-    # 'proxy_url': PROXY_URL
+    'proxy_url': PROXY_URL
 }
 
 logging.basicConfig(
