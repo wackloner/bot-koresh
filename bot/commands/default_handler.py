@@ -6,7 +6,7 @@ from telegram.ext import CallbackContext
 
 from bot.commands.decorators import moshnar_command
 from bot.commands.split_teams import is_splitting, split_into_teams
-from bot.context import App
+from bot.context import app_context
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
 from utils.messages import send_sesh
@@ -41,13 +41,13 @@ def default_message_handler(update: Update, context: CallbackContext):
     low_tokens = text.lower().split()
 
     if any(filter(lambda token: token.startswith('сеш'), low_tokens)):
-        send_sesh(App.app_context.bot, update.message.chat.id)
+        send_sesh(app_context.bot, update.message.chat.id)
         return
 
     for s in tokens:
         try:
             if is_valid_bitcoin_address(s):
-                App.app_context.tracking_manager.start_tracking(s, update.message, context)
+                app_context.tracking_manager.start_tracking(s, update.message)
             return
         except Exception as e:
             pass

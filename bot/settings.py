@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import timedelta
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -11,7 +12,9 @@ load_dotenv()
 API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
 
+# TODO: handle absence
 ADMIN_CHAT_ID: int = int(os.environ['ADMIN_CHAT_ID'])
+DATA_MESSAGE_ID: Optional[int] = os.environ.get('DATA_MESSAGE_ID', None)
 
 
 # TODO: config
@@ -39,6 +42,6 @@ logging.basicConfig(
     level=LOGGING_LEVEL
 )
 
-# logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
-# logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
 

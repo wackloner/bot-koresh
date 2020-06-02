@@ -4,7 +4,7 @@ from functools import wraps
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from bot.context import App
+from bot.context import app_context
 from bot.settings import SLADKO_EVERY_NTH_MESSAGE, COMMAND_RETRIES
 from utils.messages import send_sladko
 from utils.callback_context_utils import increase_messages_count
@@ -37,7 +37,7 @@ def moshnar_command(command_handler):
                 res = command_handler(update, context)
                 msg_cnt = increase_messages_count(context)
                 if msg_cnt % SLADKO_EVERY_NTH_MESSAGE == 0:
-                    send_sladko(App.app_context.bot, update.message.chat.id)
+                    send_sladko(app_context.bot, update.message.chat.id)
 
                 # TODO: log execution time
                 logging.debug(f'Done, msg_cnt = {msg_cnt}')

@@ -4,7 +4,7 @@ from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
 from bot.commands.decorators import send_action, moshnar_command
-from bot.context import App
+from bot.context import app_context
 
 
 @send_action(ChatAction.TYPING)
@@ -17,7 +17,7 @@ def track_address(update: Update, context: CallbackContext):
             return
 
         for address in args:
-            t = App.app_context.tracking_manager.start_tracking(address, update.message, context)
+            t = app_context.tracking_manager.start_tracking(address, update.message)
             logging.debug(f'New tracking: {t}')
     except Exception as e:
         logging.error(e)
@@ -27,9 +27,8 @@ def track_address(update: Update, context: CallbackContext):
 @moshnar_command
 def track_random_address(update: Update, context: CallbackContext):
     try:
-        address = App.app_context.blockchain_client.get_random_address_with_unconfirmed_tx()
-        logging.info(f'addr = {address}')
-        t = App.app_context.tracking_manager.start_tracking(address, update.message, context)
+        address = app_context.blockchain_client.get_random_address_with_unconfirmed_tx()
+        t = app_context.tracking_manager.start_tracking(address, update.message)
         logging.debug(f'New random tracking: {t}')
     except Exception as e:
         logging.error(e)

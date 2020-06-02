@@ -1,7 +1,8 @@
 import enum
+import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Dict
 
 from telegram import Message
 from telegram.ext import CallbackContext
@@ -37,14 +38,26 @@ class Tracking:
     address: str
     added_at: datetime
 
-    # TODO: do not store the whole message
-    trigger_message: Message
-    context: CallbackContext
+    chat_id: int
 
-    last_tx_info: Optional[TransactionInfo]
     status: TrackingStatus
     status_updated_at: datetime
+
+    # TODO: do weee need thoss?
+    last_tx_info: Optional[TransactionInfo] = None
 
     @property
     def last_confirmations_count(self) -> int:
         return self.last_tx_info.confirmations_count
+
+    def to_dict(self) -> Dict:
+        return dict(
+            address=f'"{self.address}"',
+            added_at=self.added_at.timestamp(),
+            chat_id=self.chat_id,
+            status={'"__enum__"': str(self.status)},
+            status_updated_at=self.status_updated_at.timestamp()
+        )
+
+    def to_json(self) -> str:
+        return '{' + ', '.join([f'"{k}": {v}'for (k, v) in self.to_dict().items()]) + '}'

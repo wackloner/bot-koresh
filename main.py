@@ -5,15 +5,12 @@ from telegram.ext import MessageHandler, Filters
 
 from bot.commands.commands import Commands
 from bot.commands.default_handler import default_message_handler
-from bot.context import Context, App
+from bot.context import app_context
 
 
 # TODO: separate class
 def run():
-    context = Context()
-    App.set_context(context)
-
-    updater = context.updater
+    updater = app_context.updater
     dp = updater.dispatcher
 
     for command in Commands.get_all():

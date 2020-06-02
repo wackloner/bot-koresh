@@ -6,8 +6,8 @@ from typing import Optional
 from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 
-from managers.blockchain_utils import BlockchainClient
-from managers.db_manager import DbManager
+from managers.blockchain_client import BlockchainClient
+from managers.data_manager import DataManager
 from utils.messages import send_tx_info
 from managers.phrase_manager import PhraseManager
 from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
@@ -15,20 +15,12 @@ from model.tracking import TrackingStatus
 from managers.tracking_manager import TrackingManager
 
 
-class App:
-    app_context = None
-
-    @classmethod
-    def set_context(cls, context):
-        cls.app_context = context
-
-
 def update_trackings(context: CallbackContext):
     logging.debug('-> Updating trackings...')
 
     try:
-        for t in App.app_context.tracking_manager.get_all_trackings():
-            new_status, tx_info = check_address(t.address)
+        for t in app_context.tracking_manager.get_all():
+            new_status, tx_info = app_context.blockchain_client.check_address(t.address)
 
             additional_info_str = f', {tx_info.confirmations_count} confirmations' if new_status.has_transaction() else ''
             logging.debug(f'--> {t.address} in state {new_status}{additional_info_str}')
@@ -36,16 +28,16 @@ def update_trackings(context: CallbackContext):
             if new_status != t.status:
                 if new_status == TrackingStatus.NOT_CONFIRMED:
                     send_tx_info(t, tx_info, 'Так-то оп))')
-                    App.app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
+                    app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
 
             if new_status == TrackingStatus.CONFIRMED:
                 send_tx_info(t, tx_info, PhraseManager.just_confirmed_reaction())
                 logging.debug(f'chat_data = {context.chat_data}')
-                App.app_context.tracking_manager.remove_tracking(t)
+                app_context.tracking_manager.remove_tracking(t)
 
             if new_status == TrackingStatus.NOT_CONFIRMED and tx_info.confirmations_count != t.last_confirmations_count:
                 send_tx_info(t, tx_info, 'Так-с так-с што тут у н а н а с . . .')
-                App.app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
+                app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
 
     except Exception as e:
         logging.error(e)
@@ -55,7 +47,6 @@ def update_trackings(context: CallbackContext):
 
 @dataclass
 class Context:
-    tracking_manager: TrackingManager = field(default_factory=TrackingManager)
     blockchain_client: BlockchainClient = field(default_factory=BlockchainClient)
 
     _job: Optional[Job] = field(default=None)
@@ -69,14 +60,21 @@ class Context:
         return self.updater.bot
 
     @cached_property
-    def db_manager(self) -> DbManager:
-        return DbManager(self.bot, self.tracking_manager)
+    def data_manager(self) -> DataManager:
+        return DataManager(self.bot)
+
+    @cached_property
+    def tracking_manager(self) -> TrackingManager:
+        return TrackingManager(self.data_manager, self.blockchain_client, self.bot)
 
     @cached_property
     def job_queue(self):
         return self.updater.job_queue
 
-    def run_info_updater(self) -> Optional[Job]:
+    def run_info_updater_if_not(self) -> Optional[Job]:
         if self._job is None:
             self._job = self.job_queue.run_repeating(callback=update_trackings, interval=TRACKINGS_UPDATE_INTERVAL)
         return self._job
+
+
+app_context = Context()

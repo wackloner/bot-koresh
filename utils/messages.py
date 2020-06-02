@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from telegram import Bot
+from telegram import Bot, ParseMode
 
 from utils.str_utils import tx_info_to_str
 from model.tracking import Tracking, TransactionInfo
@@ -28,7 +28,9 @@ def send_tx_info_full(t: Tracking, tx_info: TransactionInfo, msg_before: Optiona
 def comment_tracking(t: Tracking, msg: str):
     logging.debug(f'Commenting... {t.address}')
 
-    return t.trigger_message.reply_html(msg, disable_web_page_preview=True)
+    # TODO: fix local
+    from bot.context import app_context
+    return app_context.bot.send_message(text=msg, chat_id=t.chat_id, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 
 SLADKO_STICKER = 'CAACAgIAAxkBAAICg17NohlwOlknBV-TxEbYU8IMoSfVAAIGAAOGXKIDKjC8KNx8UxsZBA'
