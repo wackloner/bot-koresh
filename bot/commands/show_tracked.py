@@ -25,6 +25,7 @@ def show_tracked(update: Update, context: CallbackContext):
         logging.error(e)
 
 
+# TODO: change only pressed button
 def address_button(update: Update, context: CallbackContext):
     try:
         query = update.callback_query
@@ -39,10 +40,11 @@ def address_button(update: Update, context: CallbackContext):
             return
 
         query.edit_message_text(
-            f'{query.message.text}\n{tx_info_to_str(tracking.last_tx_info)}',
+            f'{query.message.text}\n{tx_info_to_str(app_context.blockchain_client.get_last_tx_info(tracking.address))}',
             parse_mode=ParseMode.HTML,
             disable_web_page_preview=True
         )
+
     except Exception as e:
         logging.error(e)
 

@@ -12,9 +12,8 @@ load_dotenv()
 API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
 
-# TODO: handle absence
-ADMIN_CHAT_ID: int = int(os.environ['ADMIN_CHAT_ID'])
-DATA_MESSAGE_ID: Optional[int] = os.environ.get('DATA_MESSAGE_ID', None)
+ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
+DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
 
 
 # TODO: config

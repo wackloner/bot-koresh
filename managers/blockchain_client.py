@@ -1,7 +1,7 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, ClassVar
 
 import requests
 
@@ -14,35 +14,39 @@ from bot.validator import is_valid_bitcoin_address
 
 @dataclass
 class BlockchainClient:
-    base_url: str = 'https://blockchain.info'
+    BASE_URL: ClassVar[str] = 'https://blockchain.info'
 
-    def get_unconfirmed_txs(self):
-        response = requests.get(f'{self.base_url}/unconfirmed-transactions?format=json')
-        res = response.json()['txs']
+    _cache: Dict[str, TransactionInfo] = field(default_factory=dict)
 
-        logging.debug(f'{len(res)} unconfirmed txs in total')
+    def get_last_tx_info(self, address: str) -> Optional[TransactionInfo]:
+        if not is_valid_bitcoin_address(address):
+            logging.error(f'Invalid bitcoin address: {address}')
+            return None
 
-        return res
+        # TODO: check if too old
+        if address in self._cache:
+            return self._cache[address]
 
-    def get_last_unconfirmed_tx(self):
-        res = self.get_unconfirmed_txs()[0]
+        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}')
+        if response.status_code != 200:
+            return None
 
-        logging.debug(f'last_unconfirmed_tx = {res}')
+        address_info = response.json()
+        if address_info['n_tx'] == 0:
+            return None
 
-        return res
-
-    def get_random_address_with_unconfirmed_tx(self) -> Optional[str]:
-        last_tx = self.get_last_unconfirmed_tx()
-        return next(filter(None, (out.get('addr', None) for out in last_tx.get('out', {}))), None)
+        last_transaction = address_info['txs'][0]
+        self._cache[address] = self._get_tx_info(last_transaction)
+        return self._cache[address]
 
     def check_address(self, address: str) -> Tuple[TrackingStatus, Optional[TransactionInfo]]:
         if not is_valid_bitcoin_address(address):
-            logging.debug(f'--> {address}')
+            logging.error(f'Invalid bitcoin address: {address}')
             return TrackingStatus.INVALID_HASH, None
 
         logging.debug(f'get --> {address}')
-        response = requests.get(f'{self.base_url}/rawaddr/{address}')
-        logging.info(response)
+        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}')
+
         if response.status_code == 429:
             logging.error(f'{response.headers}')
         if response.status_code != 200:
@@ -69,7 +73,7 @@ class BlockchainClient:
             return TrackingStatus.NOT_CONFIRMED, tx_info
 
     def get_confirmations_count(self, tx: str) -> Optional[int]:
-        response = requests.get(f'{self.base_url}/rawtx/{tx}')
+        response = requests.get(f'{self.BASE_URL}/rawtx/{tx}')
         if response.status_code != 200:
             logging.error(f'Failed to fetch transaction {tx} info')
             return None
@@ -79,7 +83,7 @@ class BlockchainClient:
         if block_height is None:
             return 0
 
-        response = requests.get(f'{self.base_url}/q/getblockcount')
+        response = requests.get(f'{self.BASE_URL}/q/getblockcount')
         if response.status_code != 200:
             logging.error(f'Failed to fetch total number of blocks')
             return None
@@ -93,3 +97,22 @@ class BlockchainClient:
         tx_created_at = datetime.fromtimestamp(int(last_transaction['time']))
         confirmations_cnt = self.get_confirmations_count(tx_hash)
         return TransactionInfo(tx_hash, tx_created_at, confirmations_cnt)
+
+    def get_unconfirmed_txs(self):
+        response = requests.get(f'{self.BASE_URL}/unconfirmed-transactions?format=json')
+        res = response.json()['txs']
+
+        logging.debug(f'{len(res)} unconfirmed txs in total')
+
+        return res
+
+    def get_last_unconfirmed_tx(self):
+        res = self.get_unconfirmed_txs()[0]
+
+        logging.debug(f'last_unconfirmed_tx = {res}')
+
+        return res
+
+    def get_random_address_with_unconfirmed_tx(self) -> Optional[str]:
+        last_tx = self.get_last_unconfirmed_tx()
+        return next(filter(None, (out.get('addr', None) for out in last_tx.get('out', {}))), None)

@@ -127,6 +127,6 @@ class TrackingManager:
             t.status_updated_at = datetime.now()
 
         if tx_info is not None:
-            t.last_tx_info = tx_info
+            t.last_tx_confirmations = tx_info.confirmations_count
 
         return t
