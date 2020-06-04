@@ -13,7 +13,10 @@ from utils.str_utils import tx_info_to_str
 @moshnar_command
 def show_tracked(update: Update, context: CallbackContext):
     try:
-        tracked = app_context.tracking_manager.get_by_chat_id(update.message.chat_id)
+        if not context.args == [] and context.args[0] == 'fucking_all':
+            tracked = app_context.tracking_manager.trackings
+        else:
+            tracked = app_context.tracking_manager.get_by_chat_id(update.message.chat_id)
         if tracked == []:
             update.message.reply_html(PhraseManager.nothing_to_do())
             return

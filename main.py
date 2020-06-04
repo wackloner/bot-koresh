@@ -21,6 +21,8 @@ def run():
 
     updater.start_polling()
 
+    app_context.run_info_updater_if_not()
+
     logging.info('Bot started!')
 
 

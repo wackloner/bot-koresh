@@ -42,18 +42,22 @@ def are_in_a_row(tokens: List[str], words: List[str]) -> bool:
     return False
 
 
+def is_splitting_pro(tokens: List[str]) -> bool:
+    return have_starts(tokens, ['подели', 'намошни', 'раздели', 'посплить']) and \
+           have_starts(tokens, ['плиз', 'плз', 'плез', 'пож', 'по-братски'])
+
+
 @moshnar_command
 def default_message_handler(update: Update, context: CallbackContext):
     logging.debug('default handler')
 
     text = update.message.text
-
-    if is_splitting(text):
-        split_into_teams(update, context)
-        return
-
     tokens = text.split()
     low_tokens = text.lower().split()
+
+    if is_splitting_pro(low_tokens):
+        split_into_teams(update, context)
+        return
 
     if any(filter(lambda token: token.startswith('сеш'), low_tokens)):
         send_sesh(app_context.bot, update.message.chat.id)

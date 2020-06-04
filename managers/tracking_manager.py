@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
@@ -8,7 +9,7 @@ from telegram import Message, ParseMode, Bot
 from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
 from utils.messages import comment_tracking, send_tx_info, send_tx_info_full
-from bot.settings import TTL_IN_STATUS
+from bot.settings import TTL_IN_STATUS, ADMIN_CHAT_ID
 from utils.str_utils import timedelta_to_str, get_addr_html_url
 from model.tracking import Tracking, TrackingStatus, TransactionInfo
 
@@ -39,15 +40,10 @@ class TrackingManager:
     def do_backup(self) -> bool:
         return self.data_manager.save_trackings(self.trackings)
 
-    def start_tracking(self, address: str, message: Message) -> Optional[Tracking]:
+    def start_tracking(self, address: str, message: Message) -> TrackingStatus:
         now = datetime.today()
         t = Tracking(address, now, message.chat_id, TrackingStatus.NOT_STARTED, now)
-        t = self.init_tracking(t)
-
-        if t is not None:
-            from bot.context import app_context
-            app_context.run_info_updater_if_not()
-        return t
+        return self.init_tracking(t)
 
     def add_tracking(self, t: Tracking, info_update: Optional[TransactionInfo] = None) -> None:
         self.trackings.append(t)
@@ -67,6 +63,9 @@ class TrackingManager:
     def remove_tracking(self, t: Tracking) -> None:
         self.trackings.remove(t)
         del self.trackings_by_hash[t.address]
+
+        logging.debug(f'Removed address {t.address}')
+        
         self.do_backup()
 
     def has_tracking_for_address(self, address: str) -> bool:
@@ -76,7 +75,7 @@ class TrackingManager:
         return self.trackings_by_hash.get(address)
 
     # TODO: get only address as arg and then create tracking
-    def init_tracking(self, t: Tracking) -> Optional[Tracking]:
+    def init_tracking(self, t: Tracking) -> TrackingStatus:
         status, tx_info = self.blockchain_client.check_address(t.address)
         self._update_tracking(t, status, tx_info)
 
@@ -85,15 +84,15 @@ class TrackingManager:
         if self.has_tracking_for_address(t.address):
             # TODO: handle tx finished
             send_tx_info_full(t, tx_info, 'Чел, да я и так палю че по...')
-            return None
+            return status
 
         if status == TrackingStatus.INVALID_HASH:
             comment_tracking(t, f'Это хуйня, а не адрес, чел)) {t.address} - че?)')
-            return None
+            return status
 
         if status == TrackingStatus.FAILED:
             comment_tracking(t, f'Хз че по {t.address}, сеш (какой-то).')
-            return None
+            return status
 
         if status == TrackingStatus.CONFIRMED:
             send_tx_info(t, tx_info, 'УЖЕ намошнено ЧЕЛ))')
@@ -118,7 +117,7 @@ class TrackingManager:
                 send_tx_info(t, tx_info, 'Не ну) УЖе найс) Я попалю когда там че)')
             self.add_tracking(t)
 
-        return t
+        return status
 
     @staticmethod
     def _update_tracking(t: Tracking, new_status: Optional[TrackingStatus] = None, tx_info: Optional[TransactionInfo] = None) -> Tracking:

@@ -5,7 +5,7 @@ from typing import Tuple, Optional, Dict, ClassVar
 
 import requests
 
-from bot.settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED
+from bot.settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED, PROXIES
 from utils.str_utils import timedelta_to_str
 from model.tracking import TrackingStatus, TransactionInfo
 
@@ -27,7 +27,7 @@ class BlockchainClient:
         if address in self._cache:
             return self._cache[address]
 
-        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}')
+        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
         if response.status_code != 200:
             return None
 
@@ -45,7 +45,7 @@ class BlockchainClient:
             return TrackingStatus.INVALID_HASH, None
 
         logging.debug(f'get --> {address}')
-        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}')
+        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
 
         if response.status_code == 429:
             logging.error(f'{response.headers}')
@@ -73,7 +73,7 @@ class BlockchainClient:
             return TrackingStatus.NOT_CONFIRMED, tx_info
 
     def get_confirmations_count(self, tx: str) -> Optional[int]:
-        response = requests.get(f'{self.BASE_URL}/rawtx/{tx}')
+        response = requests.get(f'{self.BASE_URL}/rawtx/{tx}', proxies=PROXIES)
         if response.status_code != 200:
             logging.error(f'Failed to fetch transaction {tx} info')
             return None
@@ -83,7 +83,7 @@ class BlockchainClient:
         if block_height is None:
             return 0
 
-        response = requests.get(f'{self.BASE_URL}/q/getblockcount')
+        response = requests.get(f'{self.BASE_URL}/q/getblockcount', proxies=PROXIES)
         if response.status_code != 200:
             logging.error(f'Failed to fetch total number of blocks')
             return None
@@ -99,7 +99,7 @@ class BlockchainClient:
         return TransactionInfo(tx_hash, tx_created_at, confirmations_cnt)
 
     def get_unconfirmed_txs(self):
-        response = requests.get(f'{self.BASE_URL}/unconfirmed-transactions?format=json')
+        response = requests.get(f'{self.BASE_URL}/unconfirmed-transactions?format=json', proxies=PROXIES)
         res = response.json()['txs']
 
         logging.debug(f'{len(res)} unconfirmed txs in total')

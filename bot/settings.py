@@ -12,6 +12,11 @@ load_dotenv()
 API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
 
+PROXIES = dict(
+    http='socks5h://localhost:9050',
+    https='socks5h://localhost:9050'
+)
+
 ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
 DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
 
@@ -41,6 +46,6 @@ logging.basicConfig(
     level=LOGGING_LEVEL
 )
 
-logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
-logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+# logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+# logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
 

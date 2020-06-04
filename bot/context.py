@@ -30,14 +30,12 @@ def update_trackings(context: CallbackContext):
                     send_tx_info(t, tx_info, 'Так-то оп))')
                     app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
 
-            if new_status == TrackingStatus.CONFIRMED:
-                send_tx_info(t, tx_info, PhraseManager.just_confirmed_reaction())
-                logging.debug(f'chat_data = {context.chat_data}')
-                app_context.tracking_manager.remove_tracking(t)
-
             if new_status == TrackingStatus.NOT_CONFIRMED and tx_info.confirmations_count != t.last_tx_confirmations:
                 send_tx_info(t, tx_info, 'Так-с так-с што тут у н а н а с . . .')
                 app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
+
+            if not new_status.should_continue():
+                app_context.tracking_manager.remove_tracking(t)
 
     except Exception as e:
         logging.error(e)

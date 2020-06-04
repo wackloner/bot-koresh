@@ -15,8 +15,23 @@ class TrackingStatus(str, enum.Enum):
     FAILED = 'failed'
     INTERRUPTED = 'interrupted'
 
+    def is_not_confirmed(self):
+        return self == self.NOT_CONFIRMED
+
+    def is_confirmed(self):
+        return self == self.CONFIRMED
+
+    def has_no_transactions(self):
+        return self == self.NO_TRANSACTIONS
+
     def has_transaction(self):
-        return self == self.NOT_CONFIRMED or self == self.CONFIRMED
+        return self.is_not_confirmed or self.is_confirmed()
+
+    def is_ok(self):
+        return self.has_transaction() or self == self.NO_TRANSACTIONS
+
+    def should_continue(self):
+        return self.is_not_confirmed() or self.has_no_transactions()
 
 
 @dataclass
