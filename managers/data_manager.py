@@ -25,7 +25,7 @@ class DataManager:
         empty_json = json.dumps([])
         message = self.bot.send_message(chat_id=ADMIN_CHAT_ID, text=empty_json)
 
-        logging.debug(f'New data storage message id = {message.message_id}')
+        logging.debug(f'\n\n-----> New data storage message id = {message.message_id}\n')
         return message.message_id
 
     def get_current_trackings(self) -> Optional[List[Tracking]]:
@@ -36,12 +36,7 @@ class DataManager:
         self.bot.delete_message(chat_id=ADMIN_CHAT_ID, message_id=fwd.message_id)
 
         json_list = json.loads(fwd.text)
-        logging.debug(f'current trackings json = {json_list}')
-
-        trackings_list = [Tracking(**json_item) for json_item in json_list]
-        logging.debug(f'current trackings = {trackings_list}')
-
-        return trackings_list
+        return [Tracking(**json_item) for json_item in json_list]
 
     def save_trackings(self, trackings: List[Tracking]) -> bool:
         if ADMIN_CHAT_ID is None:

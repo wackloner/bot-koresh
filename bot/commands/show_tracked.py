@@ -25,10 +25,10 @@ def show_tracked(update: Update, context: CallbackContext):
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_text('Да вот попаливаю чета:', reply_markup=reply_markup)
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
 
 
-# TODO: change only pressed button
+# TODO: add CHECK NOW and remove buttons
 def address_button(update: Update, context: CallbackContext):
     try:
         query = update.callback_query
@@ -39,7 +39,7 @@ def address_button(update: Update, context: CallbackContext):
         tracking = app_context.tracking_manager.get_tracking_by_address(address)
 
         if tracking is None:
-            logging.error('ERROR')
+            logging.error('SHIT ERROR')
             return
 
         query.edit_message_text(
@@ -49,7 +49,7 @@ def address_button(update: Update, context: CallbackContext):
         )
 
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
 
 
 def show_tracked_update_dispatcher(command: 'Command', dp: Dispatcher):

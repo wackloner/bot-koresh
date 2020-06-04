@@ -13,4 +13,4 @@ def start(update: Update, context: CallbackContext):
     try:
         update.message.reply_text(PhraseManager.greet())
     except Exception as ex:
-        logging.error(ex)
+        logging.exception(ex)

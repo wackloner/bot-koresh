@@ -20,7 +20,7 @@ class BlockchainClient:
 
     def get_last_tx_info(self, address: str) -> Optional[TransactionInfo]:
         if not is_valid_bitcoin_address(address):
-            logging.error(f'Invalid bitcoin address: {address}')
+            logging.exception(f'Invalid bitcoin address: {address}')
             return None
 
         # TODO: check if too old

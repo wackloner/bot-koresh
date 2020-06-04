@@ -1,5 +1,5 @@
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 
@@ -27,7 +27,7 @@ class TrackingStatus(str, enum.Enum):
     def has_transaction(self):
         return self.is_not_confirmed or self.is_confirmed()
 
-    def is_ok(self):
+    def in_progress(self):
         return self.has_transaction() or self == self.NO_TRANSACTIONS
 
     def should_continue(self):
@@ -48,17 +48,18 @@ class TransactionInfo:
 @dataclass
 class Tracking:
     address: str
-    added_at: datetime
     chat_id: int
 
-    status: TrackingStatus
-    status_updated_at: datetime
+    status: TrackingStatus = field(default=TrackingStatus.NOT_STARTED)
+    status_updated_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory=datetime.now)
+
     last_tx_confirmations: Optional[int] = None
 
     def to_dict(self) -> Dict:
         return dict(
             address=f'"{self.address}"',
-            added_at=self.added_at.timestamp(),
+            created_at=self.created_at.timestamp(),
             chat_id=self.chat_id,
             status=f'"{self.status}"',
             status_updated_at=self.status_updated_at.timestamp()

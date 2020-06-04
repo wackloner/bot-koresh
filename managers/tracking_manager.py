@@ -9,7 +9,7 @@ from telegram import Message, ParseMode, Bot
 from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
 from utils.messages import comment_tracking, send_tx_info, send_tx_info_full
-from bot.settings import TTL_IN_STATUS, ADMIN_CHAT_ID
+from bot.settings import TTL_IN_STATUS
 from utils.str_utils import timedelta_to_str, get_addr_html_url
 from model.tracking import Tracking, TrackingStatus, TransactionInfo
 
@@ -39,11 +39,6 @@ class TrackingManager:
 
     def do_backup(self) -> bool:
         return self.data_manager.save_trackings(self.trackings)
-
-    def start_tracking(self, address: str, message: Message) -> TrackingStatus:
-        now = datetime.today()
-        t = Tracking(address, now, message.chat_id, TrackingStatus.NOT_STARTED, now)
-        return self.init_tracking(t)
 
     def add_tracking(self, t: Tracking, info_update: Optional[TransactionInfo] = None) -> None:
         self.trackings.append(t)
@@ -75,7 +70,9 @@ class TrackingManager:
         return self.trackings_by_hash.get(address)
 
     # TODO: get only address as arg and then create tracking
-    def init_tracking(self, t: Tracking) -> TrackingStatus:
+    def create_tracking(self, address: str, message: Message) -> TrackingStatus:
+        t = Tracking(address, message.chat_id)
+
         status, tx_info = self.blockchain_client.check_address(t.address)
         self._update_tracking(t, status, tx_info)
 
@@ -96,7 +93,7 @@ class TrackingManager:
 
         if status == TrackingStatus.CONFIRMED:
             send_tx_info(t, tx_info, 'УЖЕ намошнено ЧЕЛ))')
-            return None
+            return status
 
         if status == TrackingStatus.NO_TRANSACTIONS:
             self.bot.send_message(t.chat_id, f'Пока чёт ни одной транзакции на {get_addr_html_url(t.address)}...\n'

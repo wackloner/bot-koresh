@@ -1,4 +1,5 @@
 import logging
+import time
 from functools import wraps
 
 from telegram import Update
@@ -34,16 +35,18 @@ def moshnar_command(command_handler):
 
         for i in range(COMMAND_RETRIES + 1):
             try:
+                start_time = time.time()
+
                 res = command_handler(update, context)
                 msg_cnt = increase_messages_count(context)
                 if msg_cnt % SLADKO_EVERY_NTH_MESSAGE == 0:
                     send_sladko(app_context.bot, update.message.chat.id)
 
-                # TODO: log execution time
-                logging.debug(f'Done, msg_cnt = {msg_cnt}')
+                execution_time = time.time() - start_time
+                logging.debug(f'Done in {execution_time}s, msg_cnt since restart = {msg_cnt}')
 
                 return res
             except Exception as e:
-                logging.error(e)
+                logging.exception(e)
 
     return wrapper

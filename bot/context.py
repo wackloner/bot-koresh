@@ -38,7 +38,7 @@ def update_trackings(context: CallbackContext):
                 app_context.tracking_manager.remove_tracking(t)
 
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
 
     logging.debug('-> Updating done.')
 

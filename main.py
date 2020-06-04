@@ -27,7 +27,7 @@ def run():
 
 
 def tear_down():
-    logging.info('EXIT BOT')
+    logging.info('EXIT BOT\n\nBye!\n')
 
 
 if __name__ == '__main__':
@@ -36,4 +36,4 @@ if __name__ == '__main__':
     try:
         run()
     except Exception as ex:
-        logging.error(ex)
+        logging.exception(ex)

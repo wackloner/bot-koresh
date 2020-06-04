@@ -88,7 +88,7 @@ def split_into_teams(update: Update, context: CallbackContext):
             context.bot.send_message(update.message.chat.id, msg)
 
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
 
 
 def is_splitting(text: str) -> bool:

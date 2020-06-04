@@ -21,11 +21,8 @@ def is_me(tokens: List[str]) -> bool:
     return any(filter(lambda token: (token.startswith('кореш') or token.startswith('Кореш')) and not token == 'корешами', tokens))
 
 
-# TODO: reformat (I WAS FUCKING HIGH)
 def is_thanks(tokens: List[str]) -> bool:
-    ot_dushi = 'от' in tokens and 'души' in tokens
-    thanks = 'спасибо' in tokens or 'cпс' in tokens or 'cпс)' in tokens or 'Спасибо' in tokens or ot_dushi
-    return thanks
+    return are_in_a_row(tokens, ['от', 'души']) or have_starts(tokens, ['спс', 'сяп', 'спасиб', 'сенкс'])
 
 
 def are_in_a_row(tokens: List[str], words: List[str]) -> bool:
@@ -55,6 +52,16 @@ def default_message_handler(update: Update, context: CallbackContext):
     tokens = text.split()
     low_tokens = text.lower().split()
 
+    # TODO: reformat for easy addings of options
+    for s in tokens:
+        try:
+            if is_valid_bitcoin_address(s):
+                app_context.tracking_manager.create_tracking(s, update.message)
+            return
+        except Exception as e:
+            pass
+            # logging.error(e)
+
     if is_splitting_pro(low_tokens):
         split_into_teams(update, context)
         return
@@ -63,19 +70,11 @@ def default_message_handler(update: Update, context: CallbackContext):
         send_sesh(app_context.bot, update.message.chat.id)
         return
 
-    for s in tokens:
-        try:
-            if is_valid_bitcoin_address(s):
-                app_context.tracking_manager.start_tracking(s, update.message)
-            return
-        except Exception as e:
-            pass
-            # logging.error(e)
-
     if low_tokens[-1].startswith('кардиган') or low_tokens[-1].startswith('карди-ган'):
         update.message.reply_text(PhraseManager.kardigun_rhyme())
         return
 
+    # TODO: add check is_reply
     if is_me(low_tokens):
         if is_thanks(text):
             update.message.reply_text(PhraseManager.thanks())
@@ -120,6 +119,10 @@ def default_message_handler(update: Update, context: CallbackContext):
 
         if have_starts(low_tokens, ['любишь', 'нравится', 'дуть', 'дуешь', 'дудо', 'dudo']):
             update.message.reply_text(PhraseManager.love_420())
+            return
+
+        if have_starts(low_tokens, ['красав', 'молодец', 'вп', 'wp', 'малаца', '']):
+            update.message.reply_text('Блин, так-то прям от души в душу душевненько) Спс')
             return
 
         update.message.reply_text(PhraseManager.default())

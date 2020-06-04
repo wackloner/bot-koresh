@@ -41,11 +41,12 @@ UPDATER_ARGS = {
 }
 
 logging.basicConfig(
-    format='[%(asctime)s][%(levelname)s][%(filename)s:%(lineno)d] %(message)s',
+    format='[%(asctime)s][%(levelname)s] %(message)s',
     datefmt='%I:%M:%S',
     level=LOGGING_LEVEL
 )
 
-# logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
-# logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
+logging.getLogger('JobQueue').setLevel(TELEGRAM_API_LOGGING_LEVEL)
 
+logging.getLogger('telegram.ext.dispatcher').setLevel(LOGGING_LEVEL)
