@@ -25,6 +25,8 @@ DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID
 CONFIRMATIONS_NEEDED = 2
 COMMAND_RETRIES = 2
 OLD_TRANSACTION_AGE = timedelta(hours=6)
+TROLL_MODE = False
+
 
 # TODO: try faster
 TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=60)
