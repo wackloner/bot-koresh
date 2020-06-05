@@ -2,6 +2,8 @@ import random
 from dataclasses import dataclass
 from typing import ClassVar, List
 
+import psutil
+
 
 @dataclass
 class PhraseManager:
@@ -60,7 +62,7 @@ class PhraseManager:
     def just_confirmed_reaction(cls) -> str:
         return random.choice(cls.JUST_CONFIRMED_REACTION)
 
-    THANKS = [
+    REPLY_TO_THANKS = [
         'Да на здоровье :)',
         'Это просто моя работа)',
         'Да не за что, я просто люблю ебашить)',
@@ -68,8 +70,8 @@ class PhraseManager:
     ]
 
     @classmethod
-    def thanks(cls) -> str:
-        return random.choice(cls.THANKS)
+    def reply_to_thanks(cls) -> str:
+        return random.choice(cls.REPLY_TO_THANKS)
 
     DEFAULT = [
         'Да хз)',
@@ -121,3 +123,37 @@ class PhraseManager:
     @classmethod
     def no_vivoz(cls) -> str:
         return random.choice(cls.NO_VIVOZ)
+
+    REPLY_TO_OFFENSE = [
+        'Вообще довольно обидно. Ладно, чел, я тебя понял.',
+        '>tfw ты такой лошок, что отыгрываешься на боте))'
+    ]
+
+    @classmethod
+    def reply_to_offense(cls) -> str:
+        return random.choice(cls.REPLY_TO_OFFENSE)
+
+    THANKS = [
+        'Так-то прям от души в душу))',
+        'Да ноу проб, мне чисто по кайфу)',
+        '😌😌😌'
+    ]
+
+    @classmethod
+    def thanks(cls) -> str:
+        return random.choice(cls.THANKS)
+
+    @classmethod
+    def flex(self) -> str:
+        return f'Вот у меня {psutil.cpu_count()} ядер братан, а у тебя?)))'
+
+    ANSWER_QUESTION = [
+        'Ну ваще хз...',
+        'Мб мб, но это не точно)',
+        'Да нихуя)',
+        'Эт да, и тут хуй че сделаешь)'
+    ]
+
+    @classmethod
+    def answer_question(cls) -> str:
+        return random.choice(cls.ANSWER_QUESTION)

@@ -20,7 +20,7 @@ def show_help(update: Update, context: CallbackContext):
     msg = f'{PhraseManager.how_are_you()}, {update.message.from_user.first_name})\n'
     msg += '\n'
     msg += 'Вообще я так-то 10/10 бот и выкупаю все команды и без ключевых слов, но на случай если ты вдруг не особо '
-    msg += 'выкупаешь базары или просто не вывозишь, вот тебе список доступных ключевых команд:\n'
+    msg += 'просекаешь базары или просто не вывозишь, вот тебе список доступных ключевых команд:\n'
     msg += '\n'
     msg += '\n'.join(list(filter(None, map(lambda cmd: cmd.help, Commands.get_all()))))
     update.message.reply_text(msg)
@@ -36,12 +36,13 @@ class Commands:
         Command('track', track_address, help=
                 f'/track - попалить, '
                 f'какая последняя транзакция на адресе(-ах), и если она есть и ещё не '
-                f'дошла, то пиздец пристально последить за ней и СРАЗУ ЖЕ отписать в чат, когда она дойдёт)\n'),
+                f'дошла, то пиздец пристально последить за ней и СРАЗУ ЖЕ отписать в чат, когда она дойдёт) Можно '
+                f'передать слово random, чтобы последить за рандомным адресом с транзакцией'),
 
         Command('track_random', track_random_address),
 
         Command('split_teams', split_into_teams, help=
-                f'/split_teams - поделить множество людей на n команд (2 по дефолту) '),
+                f'/split_teams - поделить множество людей на n команд (2 по дефолту)'),
 
         Command('show_tracked', show_tracked, _update_dispatcher=show_tracked_update_dispatcher, help=
                 f'/show_tracked - показать все отслеживаемые адреса'),

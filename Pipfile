@@ -13,6 +13,7 @@ python-telegram-bot = "*"
 PySocks = "*"
 requests = "*"
 timeloop = "*"
+psutil = "*"
 
 [dev-packages]
 pytest = "*"

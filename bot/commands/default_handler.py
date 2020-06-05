@@ -60,6 +60,10 @@ def is_split_request(tokens: List[str]) -> bool:
            have_start_in_list(tokens, ['плиз', 'плз', 'плез', 'пож', 'по-братски'])
 
 
+def is_question(tokens: List[str]) -> bool:
+    return '?' in tokens[-1]
+
+
 @moshnar_command
 def default_message_handler(update: Update, context: CallbackContext):
     logging.debug('default handler')
@@ -82,10 +86,6 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if is_split_request(low_tokens):
         split_into_teams(update, context)
-        return
-
-    if have_start_in_list(low_tokens, ['cеш']):
-        send_sesh(app_context.bot, update.message.chat.id)
         return
 
     if TROLL_MODE:
@@ -111,20 +111,20 @@ def default_message_handler(update: Update, context: CallbackContext):
         return
 
     if is_thanks(text):
-        update.message.reply_text(PhraseManager.thanks())
+        update.message.reply_text(PhraseManager.reply_to_thanks())
         return
 
-    if have_starts(low_tokens, 'еблан', 'пидор', 'маня', 'уебок'):
+    if have_starts(low_tokens, 'еблан', 'пидор', 'маня', 'уебок', 'лал', 'пету', 'долба', 'долбо', 'лох', 'пидр'):
         # TODO: filter possible negation
-        update.message.reply_text('Вообще довольно обидно. Ладно, чел, я тебя понял.')
-        return
-
-    if have_starts(low_tokens, 'лалыч', 'пету', 'долба', 'долбо'):
-        update.message.reply_text('>tfw ты такой лошок, что отыгрываешься на боте))')
+        update.message.reply_text(PhraseManager.reply_to_offense())
         return
 
     if have_starts(low_tokens, 'мошн', 'помошн'):
         update.message.reply_text('Не ну так-то я бы помошнил))')
+        return
+
+    if have_starts(low_tokens, 'намошнено', 'помошнено'):
+        update.message.reply_text('Пиздатенько че)')
         return
 
     if have_starts(low_tokens, 'трол'):
@@ -152,16 +152,44 @@ def default_message_handler(update: Update, context: CallbackContext):
         update.message.reply_text(PhraseManager.no_vivoz())
         return
 
+    if have_starts(low_tokens, 'сешишь'):
+        update.message.reply_text('Да хз, я прост на чилле, сешишь тут только ты братишка)))')
+        return
+
     if have_starts(low_tokens, 'завали'):
         update.message.reply_text('Погоди, чел, нет, это ТЫ ЗАВАЛИ)))')
         return
 
-    if have_starts(low_tokens, 'любишь', 'нравится', 'дуть', 'дуешь', 'дудо', 'dudo'):
+    if have_starts(low_tokens, 'залетай'):
+        update.message.reply_text('Так-с, записываю айпишник')
+        return
+
+    if have_starts(low_tokens, 'базар'):
+        update.message.reply_text('Не ну я базарю че')
+        return
+
+    if have_starts(low_tokens, 'толер'):
+        update.message.reply_text('По пизде нахуй')
+        return
+
+    if have_starts(low_tokens, 'флекс', 'пофлекс'):
+        update.message.reply_text(PhraseManager.flex())
+        return
+
+    if have_starts(low_tokens, 'если'):
+        update.message.reply_text('Это ты конечно интересно придумал, но хз братишка))))')
+        return
+
+    if have_starts(low_tokens, 'любишь', 'нравится', 'дуть', 'дуешь', 'дудо', 'dudo', 'плюх', 'напас'):
         update.message.reply_text(PhraseManager.love_420())
         return
 
-    if have_starts(low_tokens, 'красав', 'молодец', 'вп', 'wp', 'малаца'):
-        update.message.reply_text('Блин, так-то прям от души в душу душевненько) Спс')
+    if have_starts(low_tokens, 'красав', 'молодец', 'вп', 'wp', 'малаца', 'хорош', 'батя'):
+        update.message.reply_text(PhraseManager.thanks())
+        return
+
+    if is_question(low_tokens):
+        update.message.reply_text(PhraseManager.answer_question())
         return
 
     update.message.reply_text(PhraseManager.default())

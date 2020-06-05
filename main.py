@@ -8,6 +8,7 @@ from bot.commands.default_handler import default_message_handler
 from bot.context import app_context
 
 
+# TODO: make him inline to have an ability to use it in every conversation
 # TODO: separate class
 def run():
     updater = app_context.updater
