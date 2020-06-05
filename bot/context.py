@@ -8,9 +8,9 @@ from telegram.ext import Updater, CallbackContext, Job
 
 from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
-from utils.messages import send_tx_info
 from managers.phrase_manager import PhraseManager
-from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
+from utils.messages import send_tx_info
+from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS, PROXIES
 from model.tracking import TrackingStatus
 from managers.tracking_manager import TrackingManager
 
@@ -28,6 +28,10 @@ def update_trackings(context: CallbackContext):
             if new_status != t.status:
                 if new_status == TrackingStatus.NOT_CONFIRMED:
                     send_tx_info(t, tx_info, 'Так-то оп))')
+                    app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
+
+                if new_status == TrackingStatus.CONFIRMED:
+                    send_tx_info(t, tx_info, PhraseManager.just_confirmed_reaction())
                     app_context.tracking_manager.update_existing_tracking(t, new_status, tx_info)
 
             if new_status == TrackingStatus.NOT_CONFIRMED and tx_info.confirmations_count != t.last_tx_confirmations:

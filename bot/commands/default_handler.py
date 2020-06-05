@@ -105,6 +105,12 @@ def default_message_handler(update: Update, context: CallbackContext):
         # ignoring the message if it's not for me
         return
 
+    if are_in_a_row(low_tokens, ['заработает', 'гидра']):
+        update.message.reply_text('Да канеш, братишка) Так-то изичи пиздец, я и не такое умею))')
+        sleep(5)
+        send_sladko(context.bot, update.message.chat.id)
+        return
+
     if not low_tokens:
         # message was only my name
         update.message.reply_text('Че)')
