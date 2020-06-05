@@ -10,6 +10,7 @@ from bot.commands.show_tracked import show_tracked, show_tracked_update_dispatch
 from bot.commands.split_teams import split_into_teams
 from bot.commands.start import start
 from bot.commands.trackings import track_address, track_random_address
+from bot.commands.troll_mode import troll_mode
 
 from managers.phrase_manager import PhraseManager
 
@@ -46,6 +47,8 @@ class Commands:
 
         Command('show_tracked', show_tracked, _update_dispatcher=show_tracked_update_dispatcher, help=
                 f'/show_tracked - показать все отслеживаемые адреса'),
+
+        Command('troll_mode', troll_mode),
 
         Command('help', show_help)
     ]

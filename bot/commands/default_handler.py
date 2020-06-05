@@ -8,10 +8,10 @@ from telegram.ext import CallbackContext
 from bot.commands.decorators import moshnar_command
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
-from bot.settings import TROLL_MODE
+from bot.settings import Settings
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
-from utils.messages import send_sesh, send_sladko
+from utils.messages import send_sladko
 
 
 # TODO: make parse_utils or Parser
@@ -88,7 +88,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         split_into_teams(update, context)
         return
 
-    if TROLL_MODE:
+    if Settings.troll_mode:
         # checking only the last token for a rhyme
         if have_starts(low_tokens[-1:], 'кардиган', 'карди-ган'):
             update.message.reply_text(PhraseManager.kardigun_rhyme())
@@ -96,6 +96,14 @@ def default_message_handler(update: Update, context: CallbackContext):
 
         if have_starts(low_tokens, 'кардыч', 'перди') or have_starts(low_tokens, 'кардич', 'перди'):
             update.message.reply_text('Снова в сперме😌')
+            return
+
+        if str(low_tokens[-1]).endswith('да'):
+            update.message.reply_text('Пизда))')
+            return
+
+        if str(low_tokens[-1]).endswith('на'):
+            update.message.reply_text('Хуй на)))')
             return
 
     if has_mention_of_me(low_tokens):

@@ -1,7 +1,8 @@
 import logging
 import os
+from dataclasses import dataclass
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, ClassVar
 
 from dotenv import load_dotenv
 
@@ -22,10 +23,14 @@ DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID
 
 
 # TODO: config
+@dataclass
+class Settings:
+    troll_mode: ClassVar[bool] = False
+
+
 CONFIRMATIONS_NEEDED = 2
 COMMAND_RETRIES = 2
 OLD_TRANSACTION_AGE = timedelta(hours=6)
-TROLL_MODE = False
 
 
 # TODO: try faster
@@ -39,7 +44,7 @@ LOGGING_LEVEL = logging.DEBUG
 TELEGRAM_API_LOGGING_LEVEL = logging.INFO
 
 UPDATER_ARGS = {
-    'proxy_url': PROXY_URL
+    # 'proxy_url': PROXY_URL
 }
 
 logging.basicConfig(

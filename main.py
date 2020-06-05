@@ -24,6 +24,8 @@ def run():
 
     app_context.run_info_updater_if_not()
 
+    updater.idle()
+
     logging.info('Bot started!')
 
 
