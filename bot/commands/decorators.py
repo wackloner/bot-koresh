@@ -33,6 +33,12 @@ def moshnar_command(command_handler):
 
         logging.debug(f"Processing new input: '{update.message.text}'")
 
+        if 'id' not in context.chat_data:
+            try:
+                context.chat_data['id'] = update.message.chat.id
+            except Exception:
+                pass
+
         for i in range(COMMAND_RETRIES + 1):
             try:
                 start_time = time.time()

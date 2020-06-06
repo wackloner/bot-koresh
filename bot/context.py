@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Optional
 
-import requests
 from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 
@@ -11,7 +10,7 @@ from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
 from managers.phrase_manager import PhraseManager
 from utils.messages import send_tx_info
-from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS, PROXIES
+from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
 from model.tracking import TrackingStatus
 from managers.tracking_manager import TrackingManager
 

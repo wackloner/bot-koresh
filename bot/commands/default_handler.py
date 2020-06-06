@@ -5,6 +5,7 @@ from typing import List
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
+from bot.commands.challenge import challenge
 from bot.commands.decorators import moshnar_command
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
@@ -113,12 +114,6 @@ def default_message_handler(update: Update, context: CallbackContext):
         # ignoring the message if it's not for me
         return
 
-    if are_in_a_row(low_tokens, ['заработает', 'гидра']):
-        update.message.reply_text('Да канеш, братишка) Так-то изичи пиздец, я и не такое умею))')
-        sleep(5)
-        send_sladko(context.bot, update.message.chat.id)
-        return
-
     if not low_tokens:
         # message was only my name
         update.message.reply_text('Че)')
@@ -143,6 +138,10 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if have_starts(low_tokens, 'трол'):
         update.message.reply_text('Ну я типа пиздец тралебас ((:')
+        return
+
+    if have_starts(low_tokens, 'кнопк'):
+        challenge(update, context)
         return
 
     if are_in_a_row(low_tokens, ['не', 'вывоз']):
