@@ -3,10 +3,10 @@ import logging
 from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CallbackContext, Dispatcher, CallbackQueryHandler, CommandHandler
 
+from bot.commands.button_handler import button_handler
 from bot.commands.decorators import send_action, moshnar_command
 from bot.context import app_context
 from managers.phrase_manager import PhraseManager
-from utils.str_utils import tx_info_to_str
 
 
 @send_action(ChatAction.TYPING)
@@ -28,30 +28,6 @@ def show_tracked(update: Update, context: CallbackContext):
         logging.exception(e)
 
 
-# TODO: add CHECK NOW and remove buttons
-def address_button(update: Update, context: CallbackContext):
-    try:
-        query = update.callback_query
-
-        query.answer()
-        address = query.data
-
-        tracking = app_context.tracking_manager.get_tracking_by_address(address)
-
-        if tracking is None:
-            logging.error('SHIT ERROR')
-            return
-
-        query.edit_message_text(
-            f'{query.message.text}\n{tx_info_to_str(app_context.blockchain_client.get_last_tx_info(tracking.address))}',
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True
-        )
-
-    except Exception as e:
-        logging.exception(e)
-
-
 def show_tracked_update_dispatcher(command: 'Command', dp: Dispatcher):
     dp.add_handler(CommandHandler(command.name, command.handler))
-    dp.add_handler(CallbackQueryHandler(address_button))
+    dp.add_handler(CallbackQueryHandler(button_handler))

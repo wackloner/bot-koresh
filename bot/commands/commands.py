@@ -5,6 +5,7 @@ from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
 from bot.commands.abstract_command import Command
+from bot.commands.challenge import challenge, challenge_update_dispatcher
 from bot.commands.decorators import send_action, moshnar_command
 from bot.commands.show_tracked import show_tracked, show_tracked_update_dispatcher
 from bot.commands.split_teams import split_into_teams
@@ -49,6 +50,9 @@ class Commands:
                 f'/show_tracked - показать все отслеживаемые адреса'),
 
         Command('troll_mode', troll_mode),
+
+        Command('challenge', challenge, _update_dispatcher=challenge_update_dispatcher, help=
+                f'/challenge - скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),
 
         Command('help', show_help)
     ]
