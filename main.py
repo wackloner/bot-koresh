@@ -1,6 +1,7 @@
 import atexit
 import logging
 
+import requests
 from telegram.ext import MessageHandler, Filters
 
 from bot.commands.commands import Commands
@@ -10,6 +11,9 @@ from bot.context import app_context
 
 # TODO: make him inline to have an ability to use it in every conversation
 # TODO: separate class
+from bot.settings import PROXIES
+
+
 def run():
     updater = app_context.updater
     dp = updater.dispatcher
@@ -24,9 +28,12 @@ def run():
 
     app_context.run_info_updater_if_not()
 
-    updater.idle()
-
     logging.info('Bot started!')
+
+    response = requests.get(f'http://hydraruzxpnew4af.onion/', proxies=PROXIES)
+    logging.debug(response)
+    logging.debug(response.text)
+    logging.debug(response.headers)
 
 
 def tear_down():

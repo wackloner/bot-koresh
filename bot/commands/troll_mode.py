@@ -15,6 +15,7 @@ def troll_mode(update: Update, context: CallbackContext):
             update.message.reply_text('Бля ну и че) Ты вообще вывозишь?)')
         else:
             update.message.reply_text('Нужно ещё передать on/off)')
+        return
 
     token = str(context.args[0]).lower()
     if token == 'off':
@@ -48,4 +49,5 @@ def troll_mode_off(update: Update, context: CallbackContext):
         update.message.reply_text('Да я и так никого не троллю...')
         return
 
+    update.message.reply_text('Лан-лан...')
     Settings.troll_mode = False

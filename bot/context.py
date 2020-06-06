@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Optional
 
+import requests
 from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 

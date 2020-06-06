@@ -44,7 +44,7 @@ LOGGING_LEVEL = logging.DEBUG
 TELEGRAM_API_LOGGING_LEVEL = logging.INFO
 
 UPDATER_ARGS = {
-    # 'proxy_url': PROXY_URL
+    'proxy_url': PROXY_URL
 }
 
 logging.basicConfig(
