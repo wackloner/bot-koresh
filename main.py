@@ -28,6 +28,8 @@ def run():
 
     logging.info('Bot started!')
 
+    updater.idle()
+
 
 def tear_down():
     logging.info('EXIT BOT\n\nBye!\n')

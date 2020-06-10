@@ -177,6 +177,18 @@ def default_message_handler(update: Update, context: CallbackContext):
         update.message.reply_text('Ты мне не кореш, друг...')
         return
 
+    if have_starts(low_tokens, 'нов') and have_starts(low_tokens, 'функц'):
+        update.message.reply_text('Да я ебашу пиздец))')
+        return
+
+    if have_starts(low_tokens, 'бедняга'):
+        update.message.reply_text('Да лан, мне норм🤨🤨')
+        return
+
+    if are_in_a_row(low_tokens, ['плиз', 'удали']):
+        update.message.reply_text('Не ну этот чел ебашит по красоте)))')
+        return
+
     if are_in_a_row(low_tokens, ['обдут', 'никит']):
         update.message.reply_text('Не ну этот чел ебашит по красоте)))')
         return

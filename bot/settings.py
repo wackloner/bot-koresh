@@ -14,13 +14,14 @@ API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
 
 PROXIES = dict(
-    http='socks5h://localhost:9050',
-    https='socks5h://localhost:9050'
+    # http='socks5h://localhost:9050',
+    # https='socks5h://localhost:9050'
 )
 
 ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
 DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
 
+# TODO: env
 MY_CHAT_ID = 60972166
 
 

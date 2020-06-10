@@ -26,12 +26,16 @@ def stop_challenge_f(chat_id: int, message_id: int):
 @moshnar_command
 def challenge(update: Update, context: CallbackContext):
     try:
-        # duration = args...
         duration = DEFAULT_DURATION
+        if not context.args == []:
+            try:
+                duration = int(context.args[0])
+            except Exception:
+                pass
 
         challenge_id = context.chat_data.get('challenges_count', 0)
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('ЖМЯК', callback_data=challenge_id)]])
-        button_message = context.bot.send_message(update.message.chat.id, 'Время по-нажимать))', reply_markup=reply_markup)
+        button_message = context.bot.send_message(update.message.chat.id, f'Время по-нажимать)) ({duration}s)', reply_markup=reply_markup)
 
         if 'challenge_msg' not in context.chat_data:
             context.chat_data['challenge_msg'] = {}
@@ -39,6 +43,7 @@ def challenge(update: Update, context: CallbackContext):
 
         if 'challenge_start' not in context.chat_data:
             context.chat_data['challenge_start'] = {}
+
         context.chat_data['challenge_start'][challenge_id] = time()
 
         context.chat_data['challenges_count'] = challenge_id + 1
