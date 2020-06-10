@@ -1,4 +1,5 @@
 import logging
+from time import time
 
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
@@ -36,18 +37,19 @@ def button_handler(update: Update, context: CallbackContext):
                     if 'challenge_results' not in context.chat_data:
                         context.chat_data['challenge_results'] = {}
                     if challenge_id not in context.chat_data['challenge_results']:
-                        context.chat_data['challenge_results'][challenge_id] = []
+                        context.chat_data['challenge_results'][challenge_id] = {}
 
-                context.chat_data['challenge_results'][challenge_id].append(player)
-
-                res_msg = context.chat_data['challenge_result_msg'][challenge_id]
-                text = '\n'.join(context.chat_data['challenge_results'][challenge_id])
-                context.bot.edit_message_text(chat_id=context.chat_data['id'], message_id=res_msg, text=text)
+                if player not in context.chat_data['challenge_results'][challenge_id]:
+                    spent = time() - context.chat_data['challenge_start'][challenge_id]
+                    context.chat_data['challenge_results'][challenge_id][player] = round(spent, 1)
+                    res_msg = context.chat_data['challenge_result_msg'][challenge_id]
+                    text = '\n'.join(f'{k} {v}s' for (k, v) in context.chat_data['challenge_results'][challenge_id].items())
+                    context.bot.edit_message_text(chat_id=context.chat_data['id'], message_id=res_msg, text=text)
 
                 return
 
             except Exception as e:
-                logging.error(e)
+                logging.exception(e)
                 return
 
         tracking = app_context.tracking_manager.get_tracking_by_address(address)

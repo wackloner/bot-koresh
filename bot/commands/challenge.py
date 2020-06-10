@@ -1,5 +1,6 @@
 import logging
 from datetime import timedelta
+from time import time
 
 from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, Dispatcher, CommandHandler, CallbackQueryHandler
@@ -30,11 +31,15 @@ def challenge(update: Update, context: CallbackContext):
 
         challenge_id = context.chat_data.get('challenges_count', 0)
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('ЖМЯК', callback_data=challenge_id)]])
-        button_message = update.message.reply_text('Кто же первый?...', reply_markup=reply_markup)
+        button_message = context.bot.send_message(update.message.chat.id, 'Время по-нажимать))', reply_markup=reply_markup)
 
         if 'challenge_msg' not in context.chat_data:
             context.chat_data['challenge_msg'] = {}
         context.chat_data['challenge_msg'][challenge_id] = button_message.message_id
+
+        if 'challenge_start' not in context.chat_data:
+            context.chat_data['challenge_start'] = {}
+        context.chat_data['challenge_start'][challenge_id] = time()
 
         context.chat_data['challenges_count'] = challenge_id + 1
 
