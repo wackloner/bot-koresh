@@ -21,6 +21,8 @@ PROXIES = dict(
 ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
 DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
 
+MY_CHAT_ID = 60972166
+
 
 # TODO: config
 @dataclass

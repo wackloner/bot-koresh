@@ -9,7 +9,7 @@ from bot.commands.challenge import challenge
 from bot.commands.decorators import moshnar_command
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
-from bot.settings import Settings
+from bot.settings import Settings, MY_CHAT_ID
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
 from utils.messages import send_sladko
@@ -56,6 +56,10 @@ def are_in_a_row(tokens: List[str], words: List[str]) -> bool:
     return False
 
 
+def is_my_chat(update: Update) -> bool:
+    return update.message.chat.id == MY_CHAT_ID
+
+
 def is_split_request(tokens: List[str]) -> bool:
     return have_start_in_list(tokens, ['подели', 'намошни', 'раздели', 'посплить']) and \
            have_start_in_list(tokens, ['плиз', 'плз', 'плез', 'пож', 'по-братски'])
@@ -91,12 +95,16 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if Settings.troll_mode:
         # checking only the last token for a rhyme
-        if have_starts(low_tokens[-1:], 'кардиган', 'карди-ган'):
+        if have_starts(low_tokens[-1:], 'кардиган', 'карди-ган', 'мастер-кардиган'):
             update.message.reply_text(PhraseManager.kardigun_rhyme())
             return
 
-        if have_starts(low_tokens, 'кардыч', 'перди') or have_starts(low_tokens, 'кардич', 'перди'):
+        if are_in_a_row(low_tokens, ['кардыч', 'перди']) or are_in_a_row(low_tokens, ['кардич', 'перди']):
             update.message.reply_text('Снова в сперме😌')
+            return
+
+        if are_in_a_row(low_tokens, ['кореш', 'вывоз']):
+            update.message.reply_text('Бля ну ты побазарь мне тут ещё про вывоз лалыч))')
             return
 
         if str(low_tokens[-1]).endswith('да'):
@@ -107,12 +115,48 @@ def default_message_handler(update: Update, context: CallbackContext):
             update.message.reply_text('Хуй на)))')
             return
 
+        if have_starts(low_tokens, 'ахаха'):
+            update.message.reply_text('А ты че угараешь-то, лалыч?))))')
+            return
+
+    if are_in_a_row(low_tokens, ['кореш', 'вывоз']):
+        update.message.reply_text('Не ну я-то вывожу (:')
+        return
+
+    if have_starts(low_tokens, 'мусора'):
+        update.message.reply_text('Мусора сосатб(((')
+        return
+
     if has_mention_of_me(low_tokens):
         low_tokens = list(filter(lambda token: not token.startswith('кореш') and not token.startswith('корефан'), low_tokens))
         logging.info(low_tokens)
-    elif not is_reply_to_me(update.message):
-        # ignoring the message if it's not for me
+    elif not (is_reply_to_me(update.message) or is_my_chat(update)):
+
+        if Settings.troll_mode:
+            if str(low_tokens[-1]).endswith('))))'):
+                update.message.reply_text('Че такой довольный-то, пидорок?))')
+                return
+
+            if str(low_tokens[-1]).endswith('(((('):
+                update.message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
+                return
+
         return
+
+    if 'prev_users' not in context.chat_data:
+        context.chat_data['prev_users'] = []
+
+    context.chat_data['prev_users'].append(update.message.from_user.id)
+
+    logging.debug(context.chat_data['prev_users'])
+
+    if len(context.chat_data['prev_users']) >= 3:
+        if Settings.troll_mode and context.chat_data['prev_users'][0] == context.chat_data['prev_users'][1] and context.chat_data['prev_users'][1] == context.chat_data['prev_users'][2]:
+            update.message.reply_text('Че доебался-то)) Челик, ты просто имитация процессора, разве может такая поебота перетроллить БОТА???)))))')
+            context.chat_data['prev_users'].clear()
+            return
+        else:
+            context.chat_data['prev_users'].pop(0)
 
     if not low_tokens:
         # message was only my name
@@ -123,9 +167,26 @@ def default_message_handler(update: Update, context: CallbackContext):
         update.message.reply_text(PhraseManager.reply_to_thanks())
         return
 
-    if have_starts(low_tokens, 'еблан', 'пидор', 'маня', 'уебок', 'лал', 'пету', 'долба', 'долбо', 'лох', 'пидр'):
+    if have_starts(low_tokens, 'еблан', 'пидор', 'маня', 'уебок', 'лал', 'пету', 'долба', 'долбо', 'лох', 'пидр', 'лош', 'гондон', 'гандон'):
         # TODO: filter possible negation
         update.message.reply_text(PhraseManager.reply_to_offense())
+        return
+
+    # for diden only
+    if are_in_a_row(low_tokens, ['мне', 'не', 'приятель']):
+        update.message.reply_text('Ты мне не кореш, друг...')
+        return
+
+    if are_in_a_row(low_tokens, ['обдут', 'никит']):
+        update.message.reply_text('Не ну этот чел ебашит по красоте)))')
+        return
+
+    if have_starts(low_tokens, 'соси', 'пососи'):
+        update.message.reply_text('Зачем, если ты уже сосёшь?)')
+        return
+
+    if have_starts(low_tokens, 'иди'):
+        update.message.reply_text('Да сам иди, петушня)')
         return
 
     if have_starts(low_tokens, 'мошн', 'помошн'):
@@ -203,6 +264,18 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if is_question(low_tokens):
         update.message.reply_text(PhraseManager.answer_question())
+        return
+
+    if Settings.troll_mode:
+        if str(low_tokens[-1]).endswith('))))'):
+            update.message.reply_text('Че такой довольный-то, пидорок?))')
+            return
+
+        if str(low_tokens[-1]).endswith('(((('):
+            update.message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
+            return
+
+        update.message.reply_text('Не понял че ты хочешь, но думаю, что это потому что ты маня)')
         return
 
     update.message.reply_text(PhraseManager.default())

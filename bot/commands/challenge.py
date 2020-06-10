@@ -8,7 +8,7 @@ from bot.commands.button_handler import button_handler
 from bot.commands.decorators import send_action, moshnar_command
 from bot.context import app_context
 
-DEFAULT_DURATION = timedelta(seconds=8)
+DEFAULT_DURATION = timedelta(seconds=60)
 
 
 button_msg = {}
