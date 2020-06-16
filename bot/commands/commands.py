@@ -49,7 +49,8 @@ class Commands:
         Command('show_tracked', show_tracked, _update_dispatcher=show_tracked_update_dispatcher, help=
                 f'/show_tracked - показать все отслеживаемые адреса'),
 
-        Command('troll_mode', troll_mode),
+        Command('troll_mode', troll_mode, help=
+                f'/troll_mode on/off - тролльмод'),
 
         Command('challenge', challenge, _update_dispatcher=challenge_update_dispatcher, help=
                 f'/challenge - скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),

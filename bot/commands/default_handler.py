@@ -17,6 +17,8 @@ from utils.messages import send_sladko
 
 
 # TODO: make parse_utils or Parser
+from utils.parse_utils import get_alpha_part
+
 
 def have_start_in_list(tokens: List[str], starts: List[str]) -> bool:
     return any(filter(lambda token: any(filter(lambda s: token.startswith(s), starts)), tokens))
@@ -96,8 +98,9 @@ def default_message_handler(update: Update, context: CallbackContext):
     # TODO: reformat for easy creating of new situations/cases
     for s in tokens:
         try:
-            if is_valid_bitcoin_address(s):
-                app_context.tracking_manager.create_tracking(s, update.message)
+            alpha_part = get_alpha_part(s)
+            if is_valid_bitcoin_address(alpha_part):
+                app_context.tracking_manager.create_tracking(alpha_part, update.message)
             return
         except Exception as e:
             pass

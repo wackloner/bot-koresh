@@ -34,11 +34,11 @@ def update_challenge_f(chat_id: int, message_id: int, challenge_id: int, text: s
             )
         else:
             if challenge_id not in jobs:
-                logging.debug(f'{challenge_id} challenge job was not removed')
+                logging.error(f'{challenge_id} challenge job was not cancelled')
                 return
 
             context.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text='GG')
-            context.chat_data['challenge_jobs'][challenge_id].schedule_removal()
+            jobs[challenge_id].schedule_removal()
             del jobs[challenge_id]
             logging.debug(f'{challenge_id} challenge job was scheduled for removal')
 
