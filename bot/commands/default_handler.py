@@ -1,12 +1,13 @@
 import logging
 from time import sleep
-from typing import List
+from typing import List, Optional
 
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
 from bot.commands.challenge import challenge
 from bot.commands.decorators import moshnar_command
+from bot.commands.delete_after import delete_after_f, parse_time
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
 from bot.settings import Settings, MY_CHAT_ID
@@ -21,8 +22,16 @@ def have_start_in_list(tokens: List[str], starts: List[str]) -> bool:
     return any(filter(lambda token: any(filter(lambda s: token.startswith(s), starts)), tokens))
 
 
+def have_inside_in_list(tokens: List[str], starts: List[str]) -> bool:
+    return any(filter(lambda token: any(filter(lambda s: s in token, starts)), tokens))
+
+
 def have_starts(tokens: List[str], *args):
     return have_start_in_list(tokens, [arg for arg in args])
+
+
+def have_inside(tokens: List[str], *args):
+    return have_inside_in_list(tokens, [arg for arg in args])
 
 
 def has_mention_of_me(tokens: List[str]) -> bool:
@@ -69,6 +78,11 @@ def is_question(tokens: List[str]) -> bool:
     return '?' in tokens[-1]
 
 
+def get_delete_after(tokens: List[str]) -> Optional[str]:
+    option = list(filter(lambda token: token.startswith('$') and token[-1] in 'smhd', tokens))
+    return option[0] if len(option) > 0 else None
+
+
 @moshnar_command
 def default_message_handler(update: Update, context: CallbackContext):
     logging.debug('default handler')
@@ -93,6 +107,23 @@ def default_message_handler(update: Update, context: CallbackContext):
         split_into_teams(update, context)
         return
 
+    delete_after_time = get_delete_after(low_tokens)
+    if delete_after_time is not None:
+        logging.debug(f'default_handler = {delete_after_time}')
+
+        timer = parse_time(delete_after_time)
+        if timer is None:
+            update.message.reply_text('Чёт не вышло(')
+            return
+
+        app_context.job_queue.run_once(callback=delete_after_f(update.message.chat.id, update.message.message_id), when=timer)
+        reply_msg = update.message.reply_text('Организуем-организуем)')
+
+        bot_delay = min(7, timer)
+        # delete my msg as well
+        app_context.job_queue.run_once(callback=delete_after_f(reply_msg.chat.id, reply_msg.message_id), when=bot_delay)
+        return
+
     if Settings.troll_mode:
         # checking only the last token for a rhyme
         if have_starts(low_tokens[-1:], 'кардиган', 'карди-ган', 'мастер-кардиган'):
@@ -111,11 +142,15 @@ def default_message_handler(update: Update, context: CallbackContext):
             update.message.reply_text('Пизда))')
             return
 
+        if have_starts(low_tokens, 'принял'):
+            update.message.reply_text('На роток ты принял))')
+            return
+
         if str(low_tokens[-1]).endswith('на'):
             update.message.reply_text('Хуй на)))')
             return
 
-        if have_starts(low_tokens, 'ахаха'):
+        if have_inside(low_tokens, 'ахах', 'aзаз', 'азах', 'ахаз'):
             update.message.reply_text('А ты че угараешь-то, лалыч?))))')
             return
 
@@ -186,7 +221,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         return
 
     if are_in_a_row(low_tokens, ['плиз', 'удали']):
-        update.message.reply_text('Не ну этот чел ебашит по красоте)))')
+        context.bot.delete_message(update.message.chat.id, 2598)
         return
 
     if are_in_a_row(low_tokens, ['обдут', 'никит']):
@@ -260,6 +295,10 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if have_starts(low_tokens, 'флекс', 'пофлекс'):
         update.message.reply_text(PhraseManager.flex())
+        return
+    
+    if have_starts(low_tokens, 'жиз'):
+        update.message.reply_text('Да жиза пиздец братан...')
         return
 
     if have_starts(low_tokens, 'если'):

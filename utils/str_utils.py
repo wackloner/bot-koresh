@@ -31,6 +31,10 @@ def minutes_to_str(count: int) -> str:
     return unit_to_str(count, 'минута', 'минуты', 'минут')
 
 
+def seconds_to_str(count: int) -> str:
+    return unit_to_str(count, 'секунда', 'секунды', 'секунд')
+
+
 def timedelta_to_str(t: timedelta) -> str:
     res = ''
     if t.days > 0:
@@ -43,6 +47,10 @@ def timedelta_to_str(t: timedelta) -> str:
     minutes = (t.seconds - hours * 3600) // 60
     if minutes > 0:
         res += ' ' + minutes_to_str(minutes)
+
+    seconds = t.seconds - hours * 3600 - minutes * 60
+    if seconds > 0:
+        res += ' ' + seconds_to_str(seconds)
 
     return res.strip()
 

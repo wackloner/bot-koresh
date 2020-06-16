@@ -26,7 +26,7 @@ def run():
 
     app_context.run_info_updater_if_not()
 
-    logging.info('Bot started!')
+    logging.info('Bot started!\n\nWell... Hello (:\n')
 
     updater.idle()
 

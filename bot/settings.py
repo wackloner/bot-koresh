@@ -14,8 +14,8 @@ API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
 
 PROXIES = dict(
-    # http='socks5h://localhost:9050',
-    # https='socks5h://localhost:9050'
+    http='socks5h://localhost:9050',
+    https='socks5h://localhost:9050'
 )
 
 ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
@@ -28,8 +28,10 @@ MY_CHAT_ID = 60972166
 # TODO: config
 @dataclass
 class Settings:
-    troll_mode: ClassVar[bool] = False
+    troll_mode: ClassVar[bool] = True
 
+
+VERSION = '0.9.0'
 
 CONFIRMATIONS_NEEDED = 2
 COMMAND_RETRIES = 2

@@ -47,6 +47,7 @@ class BlockchainClient:
         logging.debug(f'get --> {address}')
         response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
 
+        # TODO: restart tor
         if response.status_code == 429:
             logging.error(f'{response.headers}')
         if response.status_code != 200:

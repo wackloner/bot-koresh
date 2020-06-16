@@ -8,6 +8,9 @@ from bot.context import app_context
 from utils.str_utils import tx_info_to_str
 
 
+CONNECTION_DELAY = 1.5
+
+
 def button_handler(update: Update, context: CallbackContext):
     try:
         query = update.callback_query
@@ -26,7 +29,7 @@ def button_handler(update: Update, context: CallbackContext):
                 player = f'@{query.from_user.username}'
                 logging.debug(f'{player} in A GAME yo')
 
-                # TODO: add spent duration info
+                # TODO: count number of times pressed
                 if 'challenge_result_msg' not in context.chat_data:
                     context.chat_data['challenge_result_msg'] = {}
                 if challenge_id not in context.chat_data['challenge_result_msg']:
@@ -40,7 +43,7 @@ def button_handler(update: Update, context: CallbackContext):
                         context.chat_data['challenge_results'][challenge_id] = {}
 
                 if player not in context.chat_data['challenge_results'][challenge_id]:
-                    spent = time() - context.chat_data['challenge_start'][challenge_id]
+                    spent = time() - context.chat_data['challenge_start'][challenge_id] - CONNECTION_DELAY
                     context.chat_data['challenge_results'][challenge_id][player] = round(spent, 1)
                     res_msg = context.chat_data['challenge_result_msg'][challenge_id]
                     text = '\n'.join(f'{k} {v}s' for (k, v) in context.chat_data['challenge_results'][challenge_id].items())
