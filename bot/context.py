@@ -21,6 +21,9 @@ def update_trackings(context: CallbackContext):
     try:
         for t in app_context.tracking_manager.get_all():
             new_status, tx_info = app_context.blockchain_client.check_address(t.address)
+            if tx_info is None:
+                logging.error(new_status)
+                continue
 
             additional_info_str = f', {tx_info.confirmations_count} confirmations' if new_status.has_transaction() else ''
             logging.debug(f'--> {t.address} in state {new_status}{additional_info_str}')

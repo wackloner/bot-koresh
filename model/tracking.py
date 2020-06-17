@@ -1,4 +1,5 @@
 import enum
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Dict
@@ -51,18 +52,18 @@ class Tracking:
     chat_id: int
 
     status: TrackingStatus = field(default=TrackingStatus.NOT_STARTED)
-    status_updated_at: datetime = field(default_factory=datetime.now)
-    created_at: datetime = field(default_factory=datetime.now)
+    status_updated_at: float = field(default_factory=time.time)
+    created_at: float = field(default_factory=time.time)
 
     last_tx_confirmations: Optional[int] = None
 
     def to_dict(self) -> Dict:
         return dict(
             address=f'"{self.address}"',
-            created_at=self.created_at.timestamp(),
+            created_at=self.created_at,
             chat_id=self.chat_id,
             status=f'"{self.status}"',
-            status_updated_at=self.status_updated_at.timestamp()
+            status_updated_at=self.status_updated_at
         )
 
     def to_json(self) -> str:

@@ -153,7 +153,7 @@ def default_message_handler(update: Update, context: CallbackContext):
             update.message.reply_text('Хуй на)))')
             return
 
-        if have_inside(low_tokens, 'ахах', 'aзаз', 'азах', 'ахаз'):
+        if have_inside(low_tokens, 'ахах', 'aзаз', 'азах', 'ахаз', 'aхх', 'азх'):
             update.message.reply_text('А ты че угараешь-то, лалыч?))))')
             return
 
@@ -310,6 +310,10 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if have_starts(low_tokens, 'любишь', 'нравится', 'дуть', 'дуешь', 'дудо', 'dudo', 'плюх', 'напас'):
         update.message.reply_text(PhraseManager.love_420())
+        return
+
+    if have_starts(low_tokens, 'найс'):
+        update.message.reply_text('Ну так ёпта бля)))')
         return
 
     if have_starts(low_tokens, 'красав', 'молодец', 'вп', 'wp', 'малаца', 'хорош', 'батя'):

@@ -28,7 +28,7 @@ MY_CHAT_ID = 60972166
 # TODO: config
 @dataclass
 class Settings:
-    troll_mode: ClassVar[bool] = True
+    troll_mode: ClassVar[bool] = False
 
 
 VERSION = '0.9.0'
