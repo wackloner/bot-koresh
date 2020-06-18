@@ -48,6 +48,10 @@ def update_challenge_f(chat_id: int, message_id: int, challenge_id: int, text: s
 @send_action(ChatAction.TYPING)
 @moshnar_command
 def challenge(update: Update, context: CallbackContext):
+    return create_challenge(update, context)
+
+
+def create_challenge(update: Update, context: CallbackContext):
     global jobs
 
     try:
