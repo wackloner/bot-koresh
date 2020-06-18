@@ -2,7 +2,7 @@ import logging
 import time
 from functools import wraps
 
-from telegram import Update
+from telegram import Update, User
 from telegram.ext import CallbackContext
 
 from bot.context import app_context
@@ -50,6 +50,21 @@ def moshnar_command(command_handler):
 
                 execution_time = time.time() - start_time
                 logging.debug(f'Done in {execution_time}s, msg_cnt since restart = {msg_cnt}')
+
+                user: User = update.message.from_user
+                user_info = app_context.db_manager.users.find_one({'id': user.id})
+
+                if user_info is None:
+                    init_info = {
+                        'id': user.id,
+                        'name': user.name,
+                        'msg_cnt': 1
+                    }
+                    res = app_context.db_manager.users.insert_one(init_info)
+                    logging.debug(f'User {user.name} was added to DB with ObjectId = {res.inserted_id}')
+                else:
+                    res = app_context.db_manager.users.update_one({'id': user.id}, {'$inc': {'msg_cnt': 1}})
+                    logging.debug(f'Updated info for user {user.name}: msg_cnt = {user_info["msg_cnt"]}')
 
                 return res
             except Exception as e:
