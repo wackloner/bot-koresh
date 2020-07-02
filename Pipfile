@@ -14,7 +14,6 @@ python-dotenv = "*"
 python-telegram-bot = "*"
 PySocks = "*"
 requests = "*"
-timeloop = "*"
 
 [dev-packages]
 pytest = "*"

@@ -60,8 +60,8 @@ class Challenge:
 
     def get_text_for_current_state(self, now: datetime):
         just_list_str = '\n'.join([f'{i}. {w.to_str()}' for i, w in enumerate(self.winners.values(), 1)]) + '\n\n'
-        winners_str = f'Залетели:\n{just_list_str}' if not len(self.winners) == 0 else ''
-        traitors_str = 'Аутотренеры ппц:\n' + '\n'.join(self.traitors) + '\n\n' if not len(self.traitors) == 0 else ''
+        winners_str = f'Залетели по красоте:\n{just_list_str}' if not len(self.winners) == 0 else ''
+        traitors_str = 'Аутотренят по полной:\n' + '\n'.join(self.traitors) + '\n\n' if not len(self.traitors) == 0 else ''
 
         '\n'.join([f'{i}. {w.to_str()}' for i, w in enumerate(self.winners.values(), 1)]) + '\n\n'
 

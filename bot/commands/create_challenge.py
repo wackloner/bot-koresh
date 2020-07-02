@@ -25,8 +25,6 @@ def update_challenge_f(challenge_id: int):
     def f(context: CallbackContext):
         global jobs
 
-        logging.debug(f'\n-------- > {datetime.now()}\n')
-
         try:
             job = context.job
 
