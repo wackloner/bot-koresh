@@ -5,7 +5,7 @@ from typing import List, Optional
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from bot.commands.challenge import challenge, create_challenge
+from bot.commands.create_challenge import create_challenge
 from bot.commands.decorators import moshnar_command
 from bot.commands.delete_after import delete_after_f, parse_time
 from bot.commands.split_teams import split_into_teams

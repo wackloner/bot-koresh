@@ -1,14 +1,50 @@
 import logging
-from time import time
+from datetime import datetime
 
-from telegram import Update, ParseMode
+from telegram import Update, ParseMode, CallbackQuery
 from telegram.ext import CallbackContext
 
 from bot.context import app_context
+from model.challenge import Winner
+from utils.callback_context_utils import get_chat_data
 from utils.str_utils import tx_info_to_str
 
 
 CONNECTION_DELAY = 1.5
+
+
+def try_handle_challenge(query: CallbackQuery, context: CallbackContext) -> bool:
+    text = query.data
+    if not text.startswith('-') and not text.startswith('+'):
+        return False
+
+    action, challenge_id = text.split()
+
+    challenge = get_chat_data(context, 'challenges', {}).get(int(challenge_id))
+    if challenge is None:
+        logging.error(f'Challenge {challenge_id} is not found...')
+        return True
+
+    player = f'@{query.from_user.username}'
+    now = datetime.now()
+
+    if action == '+':
+        if player in challenge.winners:
+            challenge.winners[player].push_cnt += 1
+        else:
+            spent = now - challenge.started_at
+            challenge.winners[player] = Winner(player, spent)
+    else:
+        if player in challenge.winners:
+            del challenge.winners[player]
+            challenge.traitors.add(player)
+        else:
+            logging.info(f'User {player} is not a winner')
+            return True
+
+    challenge.post_update(app_context.bot)
+
+    return True
 
 
 def button_handler(update: Update, context: CallbackContext):
@@ -16,45 +52,11 @@ def button_handler(update: Update, context: CallbackContext):
         query = update.callback_query
 
         query.answer()
+
+        if try_handle_challenge(query, context):
+            return
+
         address = query.data
-
-        challenge_id = -1
-        try:
-            challenge_id = int(address)
-        except Exception:
-            pass
-
-        if challenge_id != -1:
-            try:
-                player = f'@{query.from_user.username}'
-                logging.debug(f'{player} in A GAME yo')
-
-                # TODO: count number of times pressed
-                if 'challenge_result_msg' not in context.chat_data:
-                    context.chat_data['challenge_result_msg'] = {}
-                if challenge_id not in context.chat_data['challenge_result_msg']:
-                    res_msg = context.bot.send_message(context.chat_data['id'], player)
-                    context.chat_data['challenge_result_msg'][challenge_id] = res_msg.message_id
-
-                    # TODO: use default dict
-                    if 'challenge_results' not in context.chat_data:
-                        context.chat_data['challenge_results'] = {}
-                    if challenge_id not in context.chat_data['challenge_results']:
-                        context.chat_data['challenge_results'][challenge_id] = {}
-
-                if player not in context.chat_data['challenge_results'][challenge_id]:
-                    spent = time() - context.chat_data['challenge_start'][challenge_id] - CONNECTION_DELAY
-                    context.chat_data['challenge_results'][challenge_id][player] = round(spent, 1)
-                    res_msg = context.chat_data['challenge_result_msg'][challenge_id]
-                    text = '\n'.join(f'{k} {v}s' for (k, v) in context.chat_data['challenge_results'][challenge_id].items())
-                    context.bot.edit_message_text(chat_id=context.chat_data['id'], message_id=res_msg, text=text)
-
-                return
-
-            except Exception as e:
-                logging.exception(e)
-                return
-
         tracking = app_context.tracking_manager.get_tracking_by_address(address)
 
         if tracking is None:

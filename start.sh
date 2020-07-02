@@ -11,6 +11,10 @@ fi
 
 while true
 do
+#   git checkout master
+
    ~/.local/share/virtualenvs/moshnar-bot-vNaJ8oUp/bin/python3.8 ~/PycharmProjects/moshnar-bot/main.py
    sleep 1
+
+#   git stash apply
 done

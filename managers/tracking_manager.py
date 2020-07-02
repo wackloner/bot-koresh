@@ -96,8 +96,8 @@ class TrackingManager:
             return status
 
         if status == TrackingStatus.NO_TRANSACTIONS:
-            self.bot.send_message(t.chat_id, f'Пока чёт ни одной транзакции на {get_addr_html_url(t.address)}...\n'
-                                             f'Но я понаблюдаю за ним, этак {timedelta_to_str(TTL_IN_STATUS)}, отпишу ес че',
+            self.bot.send_message(t.chat_id, f'Эх, пока ни одной транзакции на {get_addr_html_url(t.address)}...\n'
+                                             f'Но я понаблюдаю за ним {timedelta_to_str(TTL_IN_STATUS)}, отпишу ес че',
                                              parse_mode=ParseMode.HTML)
             self.add_tracking(t)
 

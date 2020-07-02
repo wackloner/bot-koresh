@@ -9,6 +9,7 @@ HASH_FOOTPRINT_SIZE = 20
 
 UNCONF_EMOJI = '\u274c'
 CONF_EMOJI = '\u2705'
+SUNGLASSES_EMOJI = u'\U0001F60E'
 
 
 def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
@@ -17,6 +18,10 @@ def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
     if 2 <= count % 10 <= 4:
         return f'{count} {no_one}'
     return f'{count} {no_many}'
+
+
+def tries_to_str(count: int) -> str:
+    return unit_to_str(count, 'раз', 'раза', 'раз')
 
 
 def days_to_str(count: int) -> str:

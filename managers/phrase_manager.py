@@ -159,3 +159,14 @@ class PhraseManager:
     @classmethod
     def answer_question(cls) -> str:
         return random.choice(cls.ANSWER_QUESTION)
+
+    PRAISE_WINNERS = [
+        'Сверхлюди',
+        'Красавчики и красивицы',
+        'Умением нажимать на кнопки определённо обладают',
+        'Любители помошнить'
+    ]
+
+    @classmethod
+    def praise_winners(cls) -> str:
+        return random.choice(cls.PRAISE_WINNERS)

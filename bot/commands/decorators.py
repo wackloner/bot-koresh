@@ -58,7 +58,8 @@ def moshnar_command(command_handler):
                     send_sladko(app_context.bot, message.chat.id)
 
                 execution_time = time.time() - start_time
-                logging.debug(f'Done in {execution_time}s, msg_cnt since restart = {msg_cnt}')
+                # TODO: log uptime
+                logging.debug(f'Done in {round(execution_time, 3)}s, msg_cnt since restart = {msg_cnt}')
 
                 user: User = message.from_user
                 user_info = app_context.db_manager.users.find_one({'id': user.id})
