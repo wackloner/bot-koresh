@@ -1,4 +1,5 @@
 import logging
+import re
 from time import sleep
 from typing import List, Optional
 
@@ -100,6 +101,20 @@ def default_message_handler(update: Update, context: CallbackContext):
     text = message.text
     tokens = text.split() if text is not None else []
     low_tokens = text.lower().split() if text is not None else []
+
+    logging.debug(f'\n----> KEK')
+
+    floats = re.findall(r'\d+\.\d+', message.text)
+    if len(floats) >= 2:
+        coord_str = floats[1] + ',' + floats[0]
+        img_link = app_context.map_client.get_img_link_by_coordinates(coord_str)
+        update.message.reply_photo(photo=img_link)
+
+    floats = [f.replace(',', '.') for f in re.findall(r'\d+,\d+', message.text)]
+    if len(floats) >= 2:
+        coord_str = floats[1] + ',' + floats[0]
+        img_link = app_context.map_client.get_img_link_by_coordinates(coord_str)
+        update.message.reply_photo(photo=img_link)
 
     # TODO: reformat for easy creating of new situations/cases
     for s in tokens:

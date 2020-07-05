@@ -9,6 +9,7 @@ from telegram.ext import Updater, CallbackContext, Job
 from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
 from managers.db_manager import DBManager
+from managers.map_client import MapClient
 from managers.phrase_manager import PhraseManager
 from utils.messages import send_tx_info
 from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
@@ -76,6 +77,10 @@ class Context:
     @cached_property
     def db_manager(self) -> DBManager:
         return DBManager()
+
+    @cached_property
+    def map_client(self) -> MapClient:
+        return MapClient()
 
     @cached_property
     def job_queue(self):
