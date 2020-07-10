@@ -8,6 +8,7 @@ from telegram.ext import CallbackContext
 from bot.commands.create_challenge import create_challenge
 from bot.commands.decorators import moshnar_command
 from bot.commands.delete_after import delete_after_f, parse_time
+from bot.commands.save_photo import save_photo
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
 from bot.settings import Settings, MY_CHAT_ID
@@ -183,14 +184,23 @@ def default_message_handler(update: Update, context: CallbackContext):
 
         if Settings.troll_mode:
             if ')))' in low_tokens[-1]:
-                update.message.reply_text('Че такой довольный-то, пидорок?))')
+                message.reply_text('Че такой довольный-то, пидорок?))')
                 return
 
             if '(((' in low_tokens[-1]:
-                update.message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
+                message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
                 return
 
         return
+
+    if message.photo is not None:
+        for photo in message.photo:
+            if save_photo(photo.file_id):
+                context.bot.delete_message(message.chat.id, message.message_id)
+                logging.info(f"Message for photo '{photo.file_id}' was deleted")
+                return
+            else:
+                message.reply_text(f"Хз че по сохранить фотку '{photo.file_id}'")
 
     # TODO: remove
     if 'prev_users' not in context.chat_data:
