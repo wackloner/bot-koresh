@@ -194,14 +194,18 @@ def default_message_handler(update: Update, context: CallbackContext):
 
         return
 
-    if message.photo is not None:
+    if message.photo:
+        biggest = None
         for photo in message.photo:
-            if save_photo(photo.file_id, message.caption):
-                context.bot.delete_message(message.chat.id, message.message_id)
-                logging.info(f"Message for photo '{photo.file_id}' was deleted")
-                return
-            else:
-                message.reply_text(f"Хз че по сохранить фотку '{photo.file_id}'")
+            if biggest is None or photo.file_size > biggest.file_size:
+                biggest = photo
+
+        if save_photo(biggest.file_id, message.caption):
+            context.bot.delete_message(message.chat.id, message.message_id)
+            logging.info(f"Message for photo '{biggest.file_id}' was deleted")
+            return
+        else:
+            message.reply_text(f"Хз че по сохранить фотку '{biggest.file_id}'")
 
     if message.location is not None:
         location_str = f'{message.location.latitude}, {message.location.longitude}'

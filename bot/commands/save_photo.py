@@ -5,7 +5,7 @@ from typing import Optional
 
 import requests
 
-from bot.settings import PROXIES, API_TOKEN
+from bot.settings import PROXIES, API_TOKEN, STORAGE_DIR
 
 
 def save_photo(file_id: str, photo_extra: Optional[str]) -> bool:
@@ -32,12 +32,12 @@ def save_photo(file_id: str, photo_extra: Optional[str]) -> bool:
 
         if photo_extra is None:
             photo_extra = ''
-        photo_dir = f'{os.getcwd()}/.photo_storage'
+        photo_dir = STORAGE_DIR
         filename_suf = ''
         if photo_extra.startswith('/'):
             photo_dir += photo_extra
             os.makedirs(photo_dir, exist_ok=True)
-        else:
+        elif photo_extra:
             filename_suf = '-' + '_'.join(photo_extra.split())
 
         now_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

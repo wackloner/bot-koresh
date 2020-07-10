@@ -21,6 +21,9 @@ PROXIES = dict(
 ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
 DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
 
+STORAGE_DIR = os.environ.get('STORAGE_DIR', f'{os.getcwd()}/.data_storage')
+os.makedirs(STORAGE_DIR, exist_ok=True)
+
 # TODO: env
 MY_CHAT_ID = 60972166
 
