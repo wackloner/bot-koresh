@@ -1,7 +1,9 @@
 import logging
 import os
+import sys
 from dataclasses import dataclass
 from datetime import timedelta
+from logging.handlers import TimedRotatingFileHandler
 from typing import Optional, ClassVar
 
 from dotenv import load_dotenv
@@ -57,10 +59,18 @@ UPDATER_ARGS = {
     'proxy_url': PROXY_URL
 }
 
+
+LOGS_DIR = f'{os.getcwd()}/.logs'
+os.makedirs(LOGS_DIR, exist_ok=True)
+# 10000 here means infinity
+rotating_file_handler = TimedRotatingFileHandler(f'{LOGS_DIR}/bot.log', backupCount=10000, when='D', interval=1)
+console_handler = logging.StreamHandler(sys.stdout)
+
 logging.basicConfig(
     format='[%(asctime)s][%(levelname)s] %(message)s',
     datefmt='%I:%M:%S',
-    level=LOGGING_LEVEL
+    level=LOGGING_LEVEL,
+    **{'handlers': [console_handler, rotating_file_handler]}
 )
 
 logging.getLogger('telegram').setLevel(TELEGRAM_API_LOGGING_LEVEL)
