@@ -2,7 +2,7 @@ import logging
 from time import sleep
 from typing import List, Optional
 
-from telegram import Update, Message
+from telegram import Update, Message, User
 from telegram.ext import CallbackContext
 
 from bot.commands.create_challenge import create_challenge
@@ -97,8 +97,9 @@ def is_sladko(msg: Message) -> bool:
 def default_message_handler(update: Update, context: CallbackContext):
     logging.debug('default handler')
 
-    message = update.message
-    text = message.text
+    message: Message = update.message
+    sender: User = message.from_user
+    text: str = message.text
     tokens = text.split() if text is not None else []
     low_tokens = text.lower().split() if text is not None else []
 
@@ -195,12 +196,18 @@ def default_message_handler(update: Update, context: CallbackContext):
 
     if message.photo is not None:
         for photo in message.photo:
-            if save_photo(photo.file_id):
+            if save_photo(photo.file_id, message.caption):
                 context.bot.delete_message(message.chat.id, message.message_id)
                 logging.info(f"Message for photo '{photo.file_id}' was deleted")
                 return
             else:
                 message.reply_text(f"Хз че по сохранить фотку '{photo.file_id}'")
+
+    if message.location is not None:
+        location_str = f'{message.location.latitude}, {message.location.longitude}'
+        logging.debug(f'{sender.name} сейчас чиллит на ({location_str})')
+        message.reply_text(location_str)
+        return
 
     # TODO: remove
     if 'prev_users' not in context.chat_data:
