@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 aiohttp = "*"
 base58 = "*"
+dacite = "*"
 idna-ssl = "*"
 pipenv = "*"
 psutil = "*"

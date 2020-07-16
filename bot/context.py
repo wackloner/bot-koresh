@@ -10,6 +10,7 @@ from managers.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
 from managers.db_manager import DBManager
 from managers.phrase_manager import PhraseManager
+from managers.user_manager import UserManager
 from utils.messages import send_tx_info
 from bot.settings import API_TOKEN, TRACKINGS_UPDATE_INTERVAL, UPDATER_ARGS
 from model.tracking import TrackingStatus
@@ -76,6 +77,10 @@ class Context:
     @cached_property
     def db_manager(self) -> DBManager:
         return DBManager()
+
+    @cached_property
+    def user_manager(self) -> UserManager:
+        return UserManager(self.db_manager)
 
     @cached_property
     def job_queue(self):

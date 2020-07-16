@@ -11,6 +11,7 @@ from utils.messages import send_sladko
 from utils.callback_context_utils import increase_messages_count
 
 
+# TODO: move to utility_classes dir
 def send_action(action):
     """Sends `action` while processing func command."""
 

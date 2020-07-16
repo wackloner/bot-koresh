@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 
 from bot.commands.create_challenge import create_challenge
 from bot.commands.decorators import moshnar_command
-from bot.commands.delete_after import delete_after_f, parse_time
+from bot.commands.delete_after import delete_after_f
 from bot.commands.save_photo import save_photo
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
@@ -19,6 +19,7 @@ from utils.messages import send_sladko
 
 # TODO: make parse_utils or Parser
 from utils.parse_utils import get_alpha_part
+from utils.str_utils import parse_time_to_seconds
 
 
 def have_start_in_list(tokens: List[str], starts: List[str]) -> bool:
@@ -127,7 +128,7 @@ def default_message_handler(update: Update, context: CallbackContext):
     if delete_after_time is not None:
         logging.debug(f'default_handler = {delete_after_time}')
 
-        timer = parse_time(delete_after_time)
+        timer = parse_time_to_seconds(delete_after_time)
         if timer is None:
             update.message.reply_text('Чёт не вышло(')
             return
@@ -200,7 +201,7 @@ def default_message_handler(update: Update, context: CallbackContext):
             if biggest is None or photo.file_size > biggest.file_size:
                 biggest = photo
 
-        if save_photo(biggest.file_id, sender.name, message.caption):
+        if save_photo(biggest.file_id, sender.id, sender.name, message.caption):
             context.bot.delete_message(message.chat.id, message.message_id)
             logging.info(f"Message for photo '{biggest.file_id}' was deleted")
             return

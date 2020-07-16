@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import List
+from typing import List, Optional
 
 from bot.settings import CONFIRMATIONS_NEEDED
 from model.tracking import TransactionInfo
@@ -58,6 +58,41 @@ def timedelta_to_str(t: timedelta) -> str:
         res += ' ' + seconds_to_str(seconds)
 
     return res.strip()
+
+
+def parse_time_to_seconds(token: str) -> Optional[int]:
+    if len(token) == 0 or token[0] != '$':
+        return None
+
+    token = token[1:]
+    name = token[-1]
+    num_str = token[:-1]
+
+    try:
+        num = int(num_str)
+    except Exception:
+        return None
+
+    res = None
+
+    if name == 's':
+        res = num
+
+    if name == 'm':
+        res = num * 60
+
+    if name == 'h':
+        res = num * 60 * 60
+
+    if name == 'd':
+        res = num * 60 * 60 * 24
+
+    return res
+
+
+def parse_time(token: str) -> Optional[timedelta]:
+    seconds = parse_time_to_seconds(token)
+    return timedelta(seconds=seconds) if seconds is not None else None
 
 
 def get_addr_url(addr: str) -> str:
