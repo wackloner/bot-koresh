@@ -3,7 +3,7 @@ import logging
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from bot.context import app_context
 from bot.settings import ADMIN_CHAT_ID
 

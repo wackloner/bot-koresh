@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 
 from bot.context import app_context
 from bot.settings import SLADKO_EVERY_NTH_MESSAGE, COMMAND_RETRIES, SAVE_LAST_MESSAGES_CNT
-from utils.messages import send_sladko
+from utils.message_utils import send_sladko
 from utils.callback_context_utils import increase_messages_count
 
 

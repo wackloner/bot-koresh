@@ -3,7 +3,7 @@ import logging
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from managers.phrase_manager import PhraseManager
 
 

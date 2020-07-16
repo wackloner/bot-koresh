@@ -6,7 +6,7 @@ from telegram.ext import CallbackContext
 
 from bot.commands.abstract_command import Command
 from bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from bot.commands.show_tracked import show_tracked, show_tracked_update_dispatcher
 from bot.commands.split_teams import split_into_teams
 from bot.commands.start import start

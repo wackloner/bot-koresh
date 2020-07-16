@@ -1,10 +1,10 @@
 import logging
 
-from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, Dispatcher, CallbackQueryHandler, CommandHandler
 
 from bot.commands.button_handler import button_handler
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from bot.context import app_context
 from managers.phrase_manager import PhraseManager
 

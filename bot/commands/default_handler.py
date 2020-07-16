@@ -6,7 +6,7 @@ from telegram import Update, Message, User
 from telegram.ext import CallbackContext
 
 from bot.commands.create_challenge import create_challenge
-from bot.commands.decorators import moshnar_command
+from utils.classes.decorators import moshnar_command
 from bot.commands.delete_after import delete_after_f
 from bot.commands.save_photo import save_photo
 from bot.commands.split_teams import split_into_teams
@@ -14,7 +14,7 @@ from bot.context import app_context
 from bot.settings import Settings, MY_CHAT_ID
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
-from utils.messages import send_sladko
+from utils.message_utils import send_sladko
 
 
 # TODO: make parse_utils or Parser

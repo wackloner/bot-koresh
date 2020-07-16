@@ -3,7 +3,7 @@ from time import sleep
 from telegram import Update, ChatAction
 from telegram.ext import CallbackContext
 
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from bot.settings import Settings
 
 

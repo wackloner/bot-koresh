@@ -6,9 +6,9 @@ from typing import Optional, List, Dict
 
 from telegram import Message, ParseMode, Bot
 
-from managers.blockchain_client import BlockchainClient
+from external.blockchain_client import BlockchainClient
 from managers.data_manager import DataManager
-from utils.messages import comment_tracking, send_tx_info, send_tx_info_full
+from utils.message_utils import comment_tracking, send_tx_info, send_tx_info_full
 from bot.settings import TTL_IN_STATUS
 from utils.str_utils import timedelta_to_str, get_addr_html_url
 from model.tracking import Tracking, TrackingStatus, TransactionInfo

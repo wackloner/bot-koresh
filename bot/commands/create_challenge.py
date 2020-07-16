@@ -6,7 +6,7 @@ from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMar
 from telegram.ext import CallbackContext, Dispatcher, CommandHandler, CallbackQueryHandler
 
 from bot.commands.button_handler import button_handler
-from bot.commands.decorators import send_action, moshnar_command
+from utils.classes.decorators import send_action, moshnar_command
 from bot.context import app_context
 from model.challenge import Challenge
 from utils.callback_context_utils import get_chat_data
