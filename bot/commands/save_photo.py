@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime, timedelta
+from shutil import copyfile
 from typing import Optional
 
 import requests
@@ -23,22 +24,29 @@ def get_user_dir(user_name: Optional[str]) -> str:
 
 
 # TODO: optimize with caching
-def get_local_file_path(user_name: Optional[str] = None, extra_info: Optional[str] = None) -> str:
+def get_local_file_path(user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False) -> str:
     if extra_info is None:
         extra_info = ''
 
     user_dir = get_user_dir(user_name)
+    dst_dir = user_dir
+    params = extra_info.split()
 
-    if extra_info.startswith('/'):
-        user_dir += extra_info
-        os.makedirs(user_dir, exist_ok=True)
-    else:
-        extra_info = extra_info.replace('/', '')
+    if params[0].startswith('/'):
+        dst_dir += params[0]
+        params = params[1:]
+        os.makedirs(dst_dir, exist_ok=True)
 
-    filename_suf = '-' + '_'.join(extra_info.split()) if extra_info else ''
+        if is_admin:
+            if not os.path.isfile(f'{dst_dir}/light.jpg'):
+                copyfile(f'{user_dir}/light.jpg', f'{dst_dir}/light.jpg')
+            if not os.path.isfile(f'{dst_dir}/score.txt'):
+                copyfile(f'{user_dir}/score.txt', f'{dst_dir}/score.txt')
+
+    filename_suf = ('-' + '_'.join(params)) if params else ''
 
     now_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    return f'{user_dir}/{now_str}{filename_suf}.jpg'
+    return f'{dst_dir}/{now_str}{filename_suf}.jpg'
 
 
 def get_ttl(photo_extra_info: str) -> Optional[timedelta]:
@@ -50,7 +58,7 @@ def get_ttl(photo_extra_info: str) -> Optional[timedelta]:
 
 # TODO: param to save in common directory
 # TODO: param to schedule destroying
-def save_photo(file_id: str, user_id: Optional[int] = None, user_name: Optional[str] = None, extra_info: Optional[str] = None) -> bool:
+def save_photo(file_id: str, user_id: Optional[int] = None, user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False) -> bool:
     logging.info(f"Got photo '{file_id}'")
     try:
         # TODO: refactor
@@ -72,7 +80,7 @@ def save_photo(file_id: str, user_id: Optional[int] = None, user_name: Optional[
             logging.error(f'~~~ {response.status_code}\n{response.headers}')
             return False
 
-        local_file_path = get_local_file_path(user_name, extra_info)
+        local_file_path = get_local_file_path(user_name, extra_info, is_admin)
         ttl = get_ttl(extra_info)
         # TODO: apply TTLs
         file_info = FileInfo(file_id, file_path, local_file_path, datetime.now(), ttl)

@@ -5,13 +5,15 @@ from typing import List, Optional
 from telegram import Update, Message, User
 from telegram.ext import CallbackContext
 
+from bot.commands.admin_mode import is_admin, try_process_admin_command
 from bot.commands.create_challenge import create_challenge
+from bot.commands.troll_mode import is_troll
 from utils.classes.decorators import moshnar_command
 from bot.commands.delete_after import delete_after_f
-from bot.commands.save_photo import save_photo
+from bot.commands.save_photo import save_photo, get_user_dir
 from bot.commands.split_teams import split_into_teams
 from bot.context import app_context
-from bot.settings import Settings, MY_CHAT_ID
+from bot.settings import MY_CHAT_ID
 from bot.validator import is_valid_bitcoin_address
 from managers.phrase_manager import PhraseManager
 from utils.message_utils import send_sladko
@@ -98,6 +100,9 @@ def is_sladko(msg: Message) -> bool:
 def default_message_handler(update: Update, context: CallbackContext):
     logging.debug('default handler')
 
+    if try_process_admin_command(update, context):
+        return
+
     message: Message = update.message
     sender: User = message.from_user
     text: str = message.text
@@ -141,7 +146,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         app_context.job_queue.run_once(callback=delete_after_f(reply_msg.chat.id, reply_msg.message_id), when=bot_delay)
         return
 
-    if Settings.troll_mode:
+    if is_troll(context):
         # checking only the last token for a rhyme
         if have_starts(low_tokens[-1:], 'кардиган', 'карди-ган', 'мастер-кардиган'):
             message.reply_text(PhraseManager.kardigun_rhyme())
@@ -184,7 +189,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         logging.info(low_tokens)
     elif not (is_reply_to_me(message) or is_my_chat(update)):
 
-        if Settings.troll_mode:
+        if is_troll(context):
             if ')))' in low_tokens[-1]:
                 message.reply_text('Че такой довольный-то, пидорок?))')
                 return
@@ -201,7 +206,7 @@ def default_message_handler(update: Update, context: CallbackContext):
             if biggest is None or photo.file_size > biggest.file_size:
                 biggest = photo
 
-        if save_photo(biggest.file_id, sender.id, sender.name, message.caption):
+        if save_photo(biggest.file_id, sender.id, sender.name, message.caption, is_admin(context)):
             context.bot.delete_message(message.chat.id, message.message_id)
             logging.info(f"Message for photo '{biggest.file_id}' was deleted")
             return
@@ -214,27 +219,12 @@ def default_message_handler(update: Update, context: CallbackContext):
         message.reply_text(location_str)
         return
 
-    # TODO: remove
-    if 'prev_users' not in context.chat_data:
-        context.chat_data['prev_users'] = []
-    context.chat_data['prev_users'].append(update.message.from_user.id)
-
-    logging.debug(context.chat_data['prev_users'])
-
-    if len(context.chat_data['prev_users']) >= 3:
-        if Settings.troll_mode and context.chat_data['prev_users'][0] == context.chat_data['prev_users'][1] and context.chat_data['prev_users'][1] == context.chat_data['prev_users'][2]:
-            message.reply_text('Че доебался-то)) Челик, ты просто имитация процессора, разве может такая поебота перетроллить БОТА???)))))')
-            context.chat_data['prev_users'].clear()
-            return
-        else:
-            context.chat_data['prev_users'].pop(0)
-
     if not low_tokens:
         # message was only my name
         message.reply_text('Че)')
         return
 
-    if is_thanks(text):
+    if is_thanks(low_tokens):
         message.reply_text(PhraseManager.reply_to_thanks())
         return
 
@@ -257,7 +247,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         return
 
     if are_in_a_row(low_tokens, ['плиз', 'удали']):
-        context.bot.delete_message(update.message.chat.id, 2598)
+        context.bot.delete_message(message.chat.id, message.message_id)
         return
 
     if are_in_a_row(low_tokens, ['обдут', 'никит']):
@@ -357,7 +347,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         message.reply_text(PhraseManager.answer_question())
         return
 
-    if Settings.troll_mode:
+    if is_troll(context):
         if str(low_tokens[-1]).endswith('))))'):
             message.reply_text('Че такой довольный-то, пидорок?))')
             return
