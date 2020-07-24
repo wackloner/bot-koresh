@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from dataclasses import dataclass
 from datetime import timedelta
 from logging.handlers import TimedRotatingFileHandler
 from typing import Optional, ClassVar
@@ -29,8 +28,10 @@ os.makedirs(STORAGE_DIR, exist_ok=True)
 # TODO: env
 MY_CHAT_ID = 60972166
 
+TRANSLATOR_API_KEY = os.environ.get('TRANSLATOR_API_KEY')
 
-VERSION = '0.9.0'
+
+VERSION = '1.3.3'
 
 CONFIRMATIONS_NEEDED = 2
 COMMAND_RETRIES = 2

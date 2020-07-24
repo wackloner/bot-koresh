@@ -7,6 +7,7 @@ from telegram.ext import CallbackContext
 from bot.commands.abstract_command import Command
 from bot.commands.admin_mode import admin_mode
 from bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher
+from bot.commands.translate import translate_handle
 from utils.classes.decorators import send_action, moshnar_command
 from bot.commands.show_tracked import show_tracked, show_tracked_update_dispatcher
 from bot.commands.split_teams import split_into_teams
@@ -54,6 +55,8 @@ class Commands:
                 f'/troll_mode on/off - тролльмод'),
 
         Command('admin_mode', admin_mode),
+
+        Command('translate', translate_handle),
 
         Command('challenge', handle_challenge, _update_dispatcher=challenge_update_dispatcher, help=
                 f'/challenge - скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),

@@ -7,6 +7,7 @@ from telegram import Bot
 from telegram.ext import Updater, CallbackContext, Job
 
 from external.blockchain_client import BlockchainClient
+from external.translator_client import TranslatorClient
 from managers.data_manager import DataManager
 from managers.db_manager import DBManager
 from managers.phrase_manager import PhraseManager
@@ -81,6 +82,10 @@ class Context:
     @cached_property
     def user_manager(self) -> UserManager:
         return UserManager(self.db_manager)
+
+    @cached_property
+    def translator_client(self) -> TranslatorClient:
+        return TranslatorClient()
 
     @cached_property
     def job_queue(self):
