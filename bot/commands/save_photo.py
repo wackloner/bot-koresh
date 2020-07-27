@@ -5,7 +5,9 @@ from shutil import copyfile
 from typing import Optional
 
 import requests
+from telegram.ext import CallbackContext
 
+from bot.commands.delete_after import delete_after_f
 from bot.context import app_context
 from bot.settings import PROXIES, API_TOKEN, STORAGE_DIR
 
@@ -23,8 +25,17 @@ def get_user_dir(user_name: Optional[str]) -> str:
     return photo_dir
 
 
+def get_next_dir_num(user_name: Optional[str]) -> int:
+    user_dir = get_user_dir(user_name)
+    cur_num = 1
+    while os.path.isdir(f'{user_dir}/{cur_num}'):
+        cur_num += 1
+
+    return cur_num
+
+
 # TODO: optimize with caching
-def get_local_file_path(user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False) -> str:
+def get_local_file_path(context: CallbackContext, user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False) -> str:
     if extra_info is None:
         extra_info = ''
 
@@ -33,9 +44,18 @@ def get_local_file_path(user_name: Optional[str] = None, extra_info: Optional[st
     params = extra_info.split()
 
     if params[0].startswith('/'):
-        dst_dir += params[0]
+        custom_dir = params[0]
+        if custom_dir == '/next':
+            custom_dir = f'/{get_next_dir_num(user_name)}'
+
+        dst_dir += custom_dir
+        if params:
+            context.chat_data['last_dir'] = custom_dir[1:]
+
         params = params[1:]
         os.makedirs(dst_dir, exist_ok=True)
+
+        logging.info(params)
 
         if is_admin:
             if not os.path.isfile(f'{dst_dir}/light.jpg'):
@@ -58,7 +78,7 @@ def get_ttl(photo_extra_info: str) -> Optional[timedelta]:
 
 # TODO: param to save in common directory
 # TODO: param to schedule destroying
-def save_photo(file_id: str, user_id: Optional[int] = None, user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False) -> bool:
+def save_photo(context: CallbackContext, file_id: str, user_id: Optional[int] = None, user_name: Optional[str] = None, extra_info: Optional[str] = None, is_admin: bool = False, chat_id: Optional[int] = None) -> bool:
     logging.info(f"Got photo '{file_id}'")
     try:
         # TODO: refactor
@@ -80,7 +100,12 @@ def save_photo(file_id: str, user_id: Optional[int] = None, user_name: Optional[
             logging.error(f'~~~ {response.status_code}\n{response.headers}')
             return False
 
-        local_file_path = get_local_file_path(user_name, extra_info, is_admin)
+        if extra_info.startswith('/next'):
+            new_dir_num = get_next_dir_num(user_name)
+            message = app_context.bot.send_message(chat_id=chat_id, text=new_dir_num)
+            app_context.job_queue.run_once(callback=delete_after_f(message.chat.id, message.message_id), when=timedelta(seconds=60))
+
+        local_file_path = get_local_file_path(context, user_name, extra_info, is_admin)
         ttl = get_ttl(extra_info)
         # TODO: apply TTLs
         file_info = FileInfo(file_id, file_path, local_file_path, datetime.now(), ttl)

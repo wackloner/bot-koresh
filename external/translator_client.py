@@ -21,7 +21,7 @@ class TranslatorClient:
             'accept-encoding': 'application/gzip'
         }
 
-        response = requests.request("GET", url, headers=headers)
+        response = requests.get(url, headers=headers)
 
         return response.text.split()
 
@@ -36,7 +36,7 @@ class TranslatorClient:
             'content-type': 'application/x-www-form-urlencoded'
         }
 
-        response = requests.request('POST', url, data=payload.encode('utf-8'), headers=headers)
+        response = requests.post(url, data=payload.encode('utf-8'), headers=headers)
         if response.status_code != 200:
             logging.error(response.text)
             return None

@@ -206,7 +206,7 @@ def default_message_handler(update: Update, context: CallbackContext):
             if biggest is None or photo.file_size > biggest.file_size:
                 biggest = photo
 
-        if save_photo(biggest.file_id, sender.id, sender.name, message.caption, is_admin(context)):
+        if save_photo(context, biggest.file_id, sender.id, sender.name, message.caption, is_admin(context), message.chat.id):
             context.bot.delete_message(message.chat.id, message.message_id)
             logging.info(f"Message for photo '{biggest.file_id}' was deleted")
             return
