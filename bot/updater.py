@@ -1,13 +1,23 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from telegram.ext import CallbackContext, Job
 
 from bot.context import app_context
 from bot.settings import TRACKINGS_UPDATE_INTERVAL
 from managers.phrase_manager import PhraseManager
-from model.tracking import AddressStatus
+from model.tracking import AddressStatus, TransactionInfo
 from utils.message_utils import send_tx_info
+
+
+def transactions_changed(old_txs: List[TransactionInfo], new_txs: List[TransactionInfo]) -> bool:
+    if len(old_txs) != len(new_txs):
+        return True
+
+    old_txs = sorted(old_txs, key=lambda tx: tx.hash)
+    new_txs = sorted(new_txs, key=lambda tx: tx.hash)
+
+    return any(old.hash != new.hash or old.conf_count != new.conf_count for old, new in zip(old_txs, new_txs))
 
 
 def update_trackings(context: CallbackContext):
@@ -15,25 +25,23 @@ def update_trackings(context: CallbackContext):
 
     try:
         for t in app_context.tracking_manager.get_all():
-            old_status = t.status
+            # TODO: optimize checking for any tx update
             updated = app_context.tracking_manager.update_tracking(t)
-            if not updated:
-                continue
 
-            if updated.status != old_status:
+            if updated.status != t.status:
                 if updated.status == AddressStatus.NOT_CONFIRMED:
                     send_tx_info(t, 'Так-то опачи))')
                     continue
 
                 if updated.status == AddressStatus.CONFIRMED:
                     send_tx_info(t, PhraseManager.just_confirmed_reaction())
-                    if app_context.tracking_manager.remove_tracking(updated):
+                    if app_context.tracking_manager.remove_tracking(t):
                         logging.debug(f'Address {t.address} was removed.')
                     else:
                         logging.debug(f'Failed to remove address {t.address}.')
                     continue
 
-            if updated.status == AddressStatus.NOT_CONFIRMED:
+            if t.status == AddressStatus.NOT_CONFIRMED and transactions_changed(t.transactions, updated.transactions):
                 send_tx_info(t, 'Так-с так-с што тут у н а н а с . . .')
 
     except Exception as e:

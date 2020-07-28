@@ -1,3 +1,4 @@
+import copy
 import logging
 from dataclasses import dataclass, asdict
 from datetime import datetime
@@ -44,44 +45,45 @@ class TrackingManager:
 
         return new_tracking
 
-    def update_tracking(self, t: Tracking) -> Optional[Tracking]:
-        res = None
+    def update_tracking(self, t: Tracking) -> Tracking:
+        updated = copy.deepcopy(t)
         now = datetime.now()
 
         # TODO: update every tx separately
         status, tx_info = self.blockchain_client.check_address(t.address)
         if status == AddressStatus.CHECK_FAILED:
-            return None
+            return updated
 
-        additional_info_str = f', {tx_info.confirmations_count} confirmations' if status.has_transaction() else ''
+        additional_info_str = f', {tx_info.conf_count} confirmations' if status.has_transaction() else ''
         logging.debug(f'--> {t.address} in state {status}{additional_info_str}')
 
         if status != t.status:
-            t.status = status
-            t.status_updated_at = now
-
             res = self.db.update_one({'address': t.address}, {'$set': {'status': status, 'status_updated_at': now}})
-            if res.modified_count > 0:
-                res = t
+            if res.modified_count == 0:
+                logging.error(f'Failed to update status for address {t.address}')
+            else:
+                updated.status = status
+                updated.status_updated_at = now
 
         if tx_info:
-            txs_updated = False
-            for tx in t.transactions:
+            for tx in updated.transactions:
                 if tx.hash == tx_info.hash:
-                    if tx.confirmations_count != tx_info.confirmations_count:
-                        logging.debug(f'{tx.confirmations_count} -> {tx_info.confirmations_count}')
-                        tx.confirmations_count = tx_info.confirmations_count
-                        txs_updated = True
-                    tx.updated_at = now
+                    if tx.conf_count != tx_info.conf_count:
+                        logging.debug(f'{tx.conf_count} -> {tx_info.conf_count}')
+                        res = self.db.update_one(
+                            {'transactions.hash': tx.hash},
+                            {'$set': {
+                                'transactions.$.confirmations_cnt': tx.conf_count,
+                                'transactions.$.updated_at': now
+                            }}
+                        )
+                        if res.modified_count == 0:
+                            logging.error(f'Failed to update info for tx {tx.hash}')
+                        else:
+                            tx.conf_count = tx_info.conf_count
+                            tx.updated_at = now
 
-            if txs_updated:
-                res = self.db.update_one({'address': t.address}, {'$set': {'transactions': t.transactions}})
-                if res.modified_count > 0:
-                    res = t
-
-        if res:
-            self.trackings_by_hash[res.address] = res
-        return res
+        return updated
 
     def remove_tracking(self, t: Tracking) -> bool:
         res = self.db.delete_one({'address': t.address})
@@ -125,7 +127,7 @@ class TrackingManager:
                                       parse_mode=ParseMode.HTML)
 
         if status == AddressStatus.NOT_CONFIRMED:
-            if tx_info.confirmations_count == 0:
+            if tx_info.conf_count == 0:
                 send_tx_info(new_tracking, 'Так-с, на адреске чёт пока нихуя, но я попалю хули) Базар-вокзал))')
             else:
                 send_tx_info(new_tracking, 'Не ну))) Уже прям найс) Я попалю когда там че будет прям збс типа окда)')

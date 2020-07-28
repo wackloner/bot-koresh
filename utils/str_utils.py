@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import List, Optional
 
 from bot.settings import CONFIRMATIONS_NEEDED
@@ -6,7 +6,8 @@ from model.emojis import Emojis
 from model.tracking import TransactionInfo
 
 
-HASH_FOOTPRINT_SIZE = 20
+TX_HASH_FOOTPRINT_SIZE = 20
+ADDRESS_HASH_FOOTPRINT_SIZE = 25
 
 
 def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
@@ -92,12 +93,16 @@ def parse_time(token: str) -> Optional[timedelta]:
     return timedelta(seconds=seconds) if seconds is not None else None
 
 
+def datetime_to_str(d: datetime) -> str:
+    return d.strftime('%H:%M %d/%m/%y')
+
+
 def get_addr_url(addr: str) -> str:
     return f'https://www.blockchain.com/btc/address/{addr}'
 
 
 def get_addr_html_url(addr: str) -> str:
-    return f'<a href=\'{get_addr_url(addr)}\'>{addr}</a>'
+    return f'<a href=\'{get_addr_url(addr)}\'>{addr[:ADDRESS_HASH_FOOTPRINT_SIZE]}...</a>'
 
 
 def get_addr_list_html_str(addrs: List[str]) -> str:
@@ -106,10 +111,9 @@ def get_addr_list_html_str(addrs: List[str]) -> str:
 
 # TODO: beautify
 def tx_info_to_str(info: TransactionInfo) -> str:
-    confirmed = Emojis.get_confirmation_status_emoji(info.confirmations_count >= CONFIRMATIONS_NEEDED)
-    return f'<pre>{confirmed}[{info.confirmations_count} confirmations]</pre>\n' \
-           f'<code>[tx</code> {get_tx_url_html_str(info.hash)}<code>]</code>\n' \
-           f'<pre>[created {info.created_at}]</pre>\n'
+    confirmed = Emojis.get_confirmation_status_emoji(info.conf_count >= CONFIRMATIONS_NEEDED)
+    return f'<code>[txid </code>{get_tx_url_html_str(info.hash)}<code>]</code>\n' \
+           f'<pre>{confirmed}[{info.conf_count} conf][{datetime_to_str(info.created_at)}]</pre>\n'
 
 
 def get_tx_url(tx_hash: str) -> str:
@@ -117,7 +121,7 @@ def get_tx_url(tx_hash: str) -> str:
 
 
 def get_tx_url_html_str(tx_hash: str) -> str:
-    text = f'{tx_hash[:HASH_FOOTPRINT_SIZE]}...'
+    text = f'{tx_hash[:TX_HASH_FOOTPRINT_SIZE]}...'
     url = get_tx_url(tx_hash)
 
     return f'<a href=\'{url}\'>{text}</a>'

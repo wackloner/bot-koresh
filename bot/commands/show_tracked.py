@@ -3,6 +3,7 @@ import logging
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
+from model.tracking import AddressStatus
 from utils.classes.decorators import send_action, moshnar_command
 from bot.context import app_context
 from managers.phrase_manager import PhraseManager
@@ -23,8 +24,13 @@ def show_tracked(update: Update, context: CallbackContext):
             return
 
         for t in tracked:
-            t = app_context.tracking_manager.update_tracking(t)
+            app_context.tracking_manager.update_tracking(t)
             send_tx_info(t)
+            if t.status == AddressStatus.CONFIRMED:
+                if app_context.tracking_manager.remove_tracking(t):
+                    logging.debug(f'Address {t.address} was removed.')
+                else:
+                    logging.debug(f'Failed to remove address {t.address}.')
 
     except Exception as e:
         logging.exception(e)

@@ -1,5 +1,5 @@
 import enum
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
 
@@ -38,7 +38,7 @@ class AddressStatus(str, enum.Enum):
 class TransactionInfo:
     hash: str
     created_at: datetime
-    confirmations_count: int
+    conf_count: int
     updated_at: datetime
 
     @property

@@ -18,7 +18,7 @@ def send_tx_info(t: Tracking, msg: Optional[str] = None):
 
 def send_tracking_info_full(t: Tracking, msg_before: Optional[str] = None, msg_after: Optional[str] = None):
     txs_str = '\n\n'.join([tx_info_to_str(tx_info) for tx_info in t.transactions])
-    output = f'{get_addr_html_url(t.address)}:\n{txs_str}'
+    output = f'{get_addr_html_url(t.address)}\n{txs_str}'
     if msg_before is not None:
         output = f'{msg_before}\n\n' + output
     if msg_after is not None:
