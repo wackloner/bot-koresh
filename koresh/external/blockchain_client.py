@@ -36,7 +36,7 @@ class BlockchainClient:
             return None
 
         last_transaction = address_info['txs'][0]
-        self._cache[address] = self._get_tx_info(last_transaction)
+        self._cache[address] = self._get_tx_info(last_transaction, datetime.now())
         return self._cache[address]
 
     def check_address(self, address: str) -> Tuple[AddressStatus, Optional[TransactionInfo]]:
@@ -77,7 +77,7 @@ class BlockchainClient:
         else:
             return AddressStatus.NOT_CONFIRMED, tx_info
 
-    # TODO: optimize, recalculate only when a new block comes
+    # TODO: optimize, recalculate only when a new block comes (web sockets)
     def get_confirmations_count(self, tx: str) -> Optional[int]:
         response = requests.get(f'{self.BASE_URL}/rawtx/{tx}', proxies=PROXIES)
         if response.status_code != 200:

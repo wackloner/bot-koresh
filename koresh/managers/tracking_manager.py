@@ -71,10 +71,12 @@ class TrackingManager:
                         logging.debug(f'{tx.conf_cnt} -> {tx_info.conf_cnt}')
                         res = self.db.update_one(
                             {'transactions.hash': tx.hash},
-                            {'$set': {'transactions.$.conf_cnt': tx.conf_cnt}}
+                            {'$set': {'transactions.$.conf_cnt': tx_info.conf_cnt}}
                         )
                         if res.modified_count == 0:
                             logging.error(f'Failed to update info for tx {tx.hash}')
+                            logging.error(f'{res}')
+                            logging.error(f'{res.raw_result}')
                             return updated
                         tx.conf_cnt = tx_info.conf_cnt
 

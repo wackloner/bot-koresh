@@ -4,7 +4,7 @@ from typing import ClassVar, List
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from bot.commands.show_map import show_map
+from koresh.bot.commands.show_map import show_map
 from koresh.bot.commands.abstract_command import Command
 from koresh.bot.commands.admin_mode import admin_mode
 from koresh.bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher

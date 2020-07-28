@@ -1,10 +1,8 @@
-import logging
-
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from bot.commands.decorators import moshnar_command
-from bot.context import app_context
+from koresh.bot.context import app_context
+from koresh.utils.classes.decorators import moshnar_command
 
 
 @moshnar_command

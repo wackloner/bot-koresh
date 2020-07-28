@@ -2,7 +2,7 @@
 
 
 echo
-KORESH_HOME="/home/wackloner/PycharmProjects/moshnar-bot"
+KORESH_HOME="/home/wackloner/PycharmProjects/bot-koresh"
 echo "KORESH_HOME=$KORESH_HOME"
 SCRIPT_LOG="$KORESH_HOME/.logs/total.log"
 echo
