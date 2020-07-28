@@ -20,3 +20,7 @@ class DBManager:
     @cached_property
     def users(self) -> Collection:
         return self.db.get_collection('users')
+
+    @cached_property
+    def trackings(self) -> Collection:
+        return self.db.get_collection('trackings')

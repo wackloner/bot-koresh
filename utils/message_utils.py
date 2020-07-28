@@ -3,20 +3,22 @@ from typing import Optional
 
 from telegram import Bot, ParseMode
 
-from utils.str_utils import tx_info_to_str
-from model.tracking import Tracking, TransactionInfo
+from model.stickers import Stickers
+from utils.str_utils import tx_info_to_str, get_addr_html_url
+from model.tracking import Tracking
 
 
 def send_message(context, update, msg):
     context.bot.send_message(update.message.chat.id, msg)
 
 
-def send_tx_info(t: Tracking, tx_info: TransactionInfo, msg: Optional[str] = None):
-    return send_tx_info_full(t, tx_info, msg_after=msg)
+def send_tx_info(t: Tracking, msg: Optional[str] = None):
+    return send_tracking_info_full(t, msg_after=msg)
 
 
-def send_tx_info_full(t: Tracking, tx_info: TransactionInfo, msg_before: Optional[str] = None, msg_after: Optional[str] = None):
-    output = f'{tx_info_to_str(tx_info)}'
+def send_tracking_info_full(t: Tracking, msg_before: Optional[str] = None, msg_after: Optional[str] = None):
+    txs_str = '\n\n'.join([tx_info_to_str(tx_info) for tx_info in t.transactions])
+    output = f'{get_addr_html_url(t.address)}:\n{txs_str}'
     if msg_before is not None:
         output = f'{msg_before}\n\n' + output
     if msg_after is not None:
@@ -33,13 +35,9 @@ def comment_tracking(t: Tracking, msg: str):
     return app_context.bot.send_message(text=msg, chat_id=t.chat_id, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 
-SLADKO_STICKER = 'CAACAgIAAxkBAAICg17NohlwOlknBV-TxEbYU8IMoSfVAAIGAAOGXKIDKjC8KNx8UxsZBA'
-SESH_STICKER = 'CAACAgIAAxkBAAIEg17P_rvF-pD4ixwmI3jz4v9r5Zt4AAItAAOGXKIDVO8mIP8BqqAZBA'
-
-
 def send_sladko(bot: Bot, chat_id):
-    bot.send_sticker(chat_id, SLADKO_STICKER)
+    bot.send_sticker(chat_id, Stickers.SLADKO)
 
 
 def send_sesh(bot: Bot, chat_id):
-    bot.send_sticker(chat_id, SESH_STICKER)
+    bot.send_sticker(chat_id, Stickers.SESH)

@@ -5,7 +5,8 @@ from typing import Dict, Set
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Bot, ParseMode
 
-from utils.str_utils import timedelta_to_str, tries_to_str, CONF_EMOJI, UNCONF_EMOJI
+from model.emojis import Emojis
+from utils.str_utils import timedelta_to_str, tries_to_str
 
 
 @dataclass
@@ -41,8 +42,8 @@ class Challenge:
     @cached_property
     def reply_markup(self) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
-            [[InlineKeyboardButton(f'{CONF_EMOJI} ЖМЯК', callback_data=f'+ {self.id}'),
-             InlineKeyboardButton(f'{UNCONF_EMOJI} Минус', callback_data=f'- {self.id}')]]
+            [[InlineKeyboardButton(f'{Emojis.GREEN_CHECK_MARK} ЖМЯК', callback_data=f'+ {self.id}'),
+             InlineKeyboardButton(f'{Emojis.RED_CROSS} Минус', callback_data=f'- {self.id}')]]
         )
 
     def is_finished(self) -> bool:

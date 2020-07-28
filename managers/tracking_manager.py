@@ -1,67 +1,91 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime
 from functools import cached_property
 from typing import Optional, List, Dict
 
+from pymongo.collection import Collection
 from telegram import Message, ParseMode, Bot
 
 from external.blockchain_client import BlockchainClient
-from managers.data_manager import DataManager
-from utils.message_utils import comment_tracking, send_tx_info, send_tx_info_full
+from managers.db_manager import DBManager
+from utils.message_utils import send_tx_info, send_tracking_info_full
 from bot.settings import TTL_IN_STATUS
 from utils.str_utils import timedelta_to_str, get_addr_html_url
-from model.tracking import Tracking, TrackingStatus, TransactionInfo
+from model.tracking import Tracking, AddressStatus, TransactionInfo
 
 
-# TODO: check thread-safety
 # TODO: schedule backups
 @dataclass
 class TrackingManager:
-    data_manager: DataManager
     blockchain_client: BlockchainClient
-    bot: Bot
+    db_manager: DBManager
 
     @cached_property
-    def trackings(self) -> List[Tracking]:
-        return self.data_manager.get_current_trackings() or []
+    def db(self) -> Collection:
+        return self.db_manager.trackings
 
     @cached_property
     def trackings_by_hash(self) -> Dict[str, Tracking]:
-        return {t.address: t for t in self.trackings}
+        return {t.address: t for t in self.get_all()}
 
     def get_all(self) -> List[Tracking]:
-        return self.trackings.copy()
+        return [Tracking.from_dict(d) for d in self.db.find({})]
 
-    # TODO: more efficient
     def get_by_chat_id(self, chat_id: int) -> List[Tracking]:
-        return list(filter(lambda t: t.chat_id == chat_id, self.trackings))
+        return [Tracking.from_dict(d) for d in self.db.find({'chat_id': chat_id})]
 
-    def do_backup(self) -> bool:
-        return self.data_manager.save_trackings(self.trackings)
+    def create(self, address: str, chat_id: int, status: AddressStatus, transactions: List[TransactionInfo]):
+        now = datetime.now()
+        new_tracking = Tracking(address, chat_id, now, status, now, transactions)
+        res = self.db.insert_one(asdict(new_tracking))
+        if not res.acknowledged:
+            return None
 
-    def add_tracking(self, t: Tracking, info_update: Optional[TransactionInfo] = None) -> None:
-        self.trackings.append(t)
-        self.trackings_by_hash[t.address] = t
-        if info_update is not None:
-            self._update_tracking(t, tx_info=info_update)
-        self.do_backup()
+        return new_tracking
 
-    def update_existing_tracking(self, t: Tracking, new_status: Optional[TrackingStatus] = None,
-                                 tx_info: Optional[TransactionInfo] = None) -> Optional[Tracking]:
-        found = self.get_tracking_by_address(t.address)
-        if found is not None:
-            self._update_tracking(t, new_status, tx_info)
-            self.do_backup()
-        return found
+    def update_tracking(self, t: Tracking) -> Optional[Tracking]:
+        res = None
+        now = datetime.now()
 
-    def remove_tracking(self, t: Tracking) -> None:
-        self.trackings.remove(t)
-        del self.trackings_by_hash[t.address]
+        # TODO: update every tx separately
+        status, tx_info = self.blockchain_client.check_address(t.address)
+        if status == AddressStatus.CHECK_FAILED:
+            return None
 
-        logging.debug(f'Removed address {t.address}')
-        
-        self.do_backup()
+        additional_info_str = f', {tx_info.confirmations_count} confirmations' if status.has_transaction() else ''
+        logging.debug(f'--> {t.address} in state {status}{additional_info_str}')
+
+        if status != t.status:
+            t.status = status
+            t.status_updated_at = now
+
+            res = self.db.update_one({'address': t.address}, {'$set': {'status': status, 'status_updated_at': now}})
+            if res.modified_count > 0:
+                res = t
+
+        if tx_info:
+            txs_updated = False
+            for tx in t.transactions:
+                if tx.hash == tx_info.hash:
+                    if tx.confirmations_count != tx_info.confirmations_count:
+                        logging.debug(f'{tx.confirmations_count} -> {tx_info.confirmations_count}')
+                        tx.confirmations_count = tx_info.confirmations_count
+                        txs_updated = True
+                    tx.updated_at = now
+
+            if txs_updated:
+                res = self.db.update_one({'address': t.address}, {'$set': {'transactions': t.transactions}})
+                if res.modified_count > 0:
+                    res = t
+
+        if res:
+            self.trackings_by_hash[res.address] = res
+        return res
+
+    def remove_tracking(self, t: Tracking) -> bool:
+        res = self.db.delete_one({'address': t.address})
+        return res.deleted_count > 0
 
     def has_tracking_for_address(self, address: str) -> bool:
         return address in self.trackings_by_hash
@@ -69,60 +93,41 @@ class TrackingManager:
     def get_tracking_by_address(self, address: str) -> Optional[Tracking]:
         return self.trackings_by_hash.get(address)
 
-    # TODO: get only address as arg and then create tracking
-    def create_tracking(self, address: str, message: Message) -> TrackingStatus:
-        t = Tracking(address, message.chat_id)
-
-        status, tx_info = self.blockchain_client.check_address(t.address)
-        self._update_tracking(t, status, tx_info)
-
-        # TODO: handle new statuses
-
-        if self.has_tracking_for_address(t.address):
+    # TODO: check maybe bot could be taken from message
+    def track_address(self, address: str, message: Message, bot: Bot) -> Optional[Tracking]:
+        found = self.get_tracking_by_address(address)
+        if found is not None:
             # TODO: handle tx finished
-            send_tx_info_full(t, tx_info, 'Чел, да я и так палю че по...')
-            return status
+            send_tracking_info_full(found, 'Чел, да я и так палю че по...')
+            return found
 
-        if status == TrackingStatus.INVALID_HASH:
-            comment_tracking(t, f'Это хуйня, а не адрес, чел)) {t.address} - че?)')
-            return status
+        status, tx_info = self.blockchain_client.check_address(address)
 
-        if status == TrackingStatus.FAILED:
-            comment_tracking(t, f'Хз че по {t.address}, сеш (какой-то).')
-            return status
+        if status == AddressStatus.INVALID_HASH:
+            message.reply_text(f'Это хуйня, а не адрес, чел)) {address} - че?)')
+            return None
 
-        if status == TrackingStatus.CONFIRMED:
-            send_tx_info(t, tx_info, 'УЖЕ намошнено ЧЕЛ))')
-            return status
+        if status == AddressStatus.CHECK_FAILED:
+            # TODO: restart tor with status code
+            message.reply_text(f'Хз че по {address}, сеш (какой-то).')
+            return None
 
-        if status == TrackingStatus.NO_TRANSACTIONS:
-            self.bot.send_message(t.chat_id, f'Эх, пока ни одной транзакции на {get_addr_html_url(t.address)}...\n'
-                                             f'Но я понаблюдаю за ним {timedelta_to_str(TTL_IN_STATUS)}, отпишу ес че',
-                                             parse_mode=ParseMode.HTML)
-            self.add_tracking(t)
+        if status == AddressStatus.CONFIRMED:
+            # TODO: send how long ago
+            message.reply_text('УЖЕ намошнено ЧЕЛ))')
+            return None
 
-        if status == TrackingStatus.TRANSACTION_IS_OLD:
-            self.bot.send_message(t.chat_id, f'Последняя транзакция на {get_addr_html_url(t.address)} была {timedelta_to_str(tx_info.age)} назад...\n'
-                                             f'Но ладно, мб новая залетит, послежу за адресом ещё {timedelta_to_str(TTL_IN_STATUS)}',
-                                             parse_mode=ParseMode.HTML)
-            self.add_tracking(t)
+        chat_id = message.chat.id
+        new_tracking = self.create(address, chat_id, status, [tx_info])
+        if status == AddressStatus.NO_TRANSACTIONS:
+            bot.send_message(chat_id, f'Эх, пока ни одной транзакции на {get_addr_html_url(address)}...\n'
+                                      f'Но я понаблюдаю за ним {timedelta_to_str(TTL_IN_STATUS)}, отпишу ес че',
+                                      parse_mode=ParseMode.HTML)
 
-        if status == TrackingStatus.NOT_CONFIRMED:
+        if status == AddressStatus.NOT_CONFIRMED:
             if tx_info.confirmations_count == 0:
-                send_tx_info(t, tx_info, 'Так-с, пока чёт нихуя, но я попалю, че)')
+                send_tx_info(new_tracking, 'Так-с, на адреске чёт пока нихуя, но я попалю хули) Базар-вокзал))')
             else:
-                send_tx_info(t, tx_info, 'Не ну) УЖе найс) Я попалю когда там че)')
-            self.add_tracking(t)
+                send_tx_info(new_tracking, 'Не ну))) Уже прям найс) Я попалю когда там че будет прям збс типа окда)')
 
-        return status
-
-    @staticmethod
-    def _update_tracking(t: Tracking, new_status: Optional[TrackingStatus] = None, tx_info: Optional[TransactionInfo] = None) -> Tracking:
-        if new_status is not None:
-            t.status = new_status
-            t.status_updated_at = datetime.now()
-
-        if tx_info is not None:
-            t.last_tx_confirmations = tx_info.confirmations_count
-
-        return t
+        return new_tracking

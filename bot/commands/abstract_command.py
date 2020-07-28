@@ -5,17 +5,15 @@ from telegram import Update
 from telegram.ext import Dispatcher, CommandHandler, CallbackContext
 
 
-def default_update_dispatcher(command: 'Command', dp: Dispatcher) -> None:
-    dp.add_handler(CommandHandler(command.name, command.handler))
-
-
 @dataclass
 class Command:
     name: str
     handler: Callable[[Update, CallbackContext], None]
     help: Optional[str] = None
 
-    _update_dispatcher: Callable[['Command', Dispatcher], None] = default_update_dispatcher
+    additional_dispatcher_update: Optional[Callable] = None
 
-    def update_dispatcher(self, dp: Dispatcher):
-        self._update_dispatcher(self, dp)
+    def update_dispatcher(self, dp: Dispatcher) -> None:
+        dp.add_handler(CommandHandler(self.name, self.handler))
+        if self.additional_dispatcher_update:
+            self.additional_dispatcher_update(dp)

@@ -3,8 +3,10 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Dict
 
 from dacite import from_dict
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class FileInfo:
     id: str
@@ -14,6 +16,7 @@ class FileInfo:
     ttl: Optional[timedelta]
 
 
+@dataclass_json
 @dataclass
 class User:
     id: int

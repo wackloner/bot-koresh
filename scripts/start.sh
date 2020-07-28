@@ -9,6 +9,8 @@ then
   tor &
 fi
 
+/home/wackloner/PycharmProjects/moshnar-bot/scripts/start_mongodb.sh
+
 while true
 do
 #   git checkout master

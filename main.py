@@ -10,6 +10,7 @@ from bot.context import app_context
 
 # TODO: make him inline to have an ability to use it in every conversation
 # TODO: separate class
+from bot.updater import run_info_updater_if_not
 
 
 def run():
@@ -24,7 +25,7 @@ def run():
 
     updater.start_polling()
 
-    app_context.run_info_updater_if_not()
+    run_info_updater_if_not()
 
     logging.info('Bot started!\n\nWell... Hello (:\n')
 

@@ -114,7 +114,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         try:
             alpha_part = get_alpha_part(s)
             if is_valid_bitcoin_address(alpha_part):
-                app_context.tracking_manager.create_tracking(alpha_part, message)
+                app_context.tracking_manager.track_address(alpha_part, message)
             return
         except Exception as e:
             pass

@@ -9,10 +9,10 @@ from bot.commands.admin_mode import admin_mode
 from bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher
 from bot.commands.translate import translate_handle
 from utils.classes.decorators import send_action, moshnar_command
-from bot.commands.show_tracked import show_tracked, show_tracked_update_dispatcher
+from bot.commands.show_tracked import show_tracked
 from bot.commands.split_teams import split_into_teams
 from bot.commands.start import start
-from bot.commands.trackings import track_address, track_random_address
+from bot.commands.track_address import track_address
 from bot.commands.troll_mode import troll_mode
 
 from managers.phrase_manager import PhraseManager
@@ -43,12 +43,10 @@ class Commands:
                 f'дошла, то пиздец пристально последить за ней и СРАЗУ ЖЕ отписать в чат, когда она дойдёт) Можно '
                 f'передать слово random, чтобы последить за рандомным адресом с транзакцией'),
 
-        Command('track_random', track_random_address),
-
         Command('split_teams', split_into_teams, help=
                 f'/split_teams - поделить множество людей на n команд (2 по дефолту)'),
 
-        Command('show_tracked', show_tracked, _update_dispatcher=show_tracked_update_dispatcher, help=
+        Command('show_tracked', show_tracked, help=
                 f'/show_tracked - показать все отслеживаемые адреса'),
 
         Command('troll_mode', troll_mode, help=
@@ -58,7 +56,7 @@ class Commands:
 
         Command('translate', translate_handle),
 
-        Command('challenge', handle_challenge, _update_dispatcher=challenge_update_dispatcher, help=
+        Command('challenge', handle_challenge, additional_dispatcher_update=challenge_update_dispatcher, help=
                 f'/challenge - скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),
 
         Command('help', show_help)
@@ -67,7 +65,3 @@ class Commands:
     @classmethod
     def get_all(cls) -> List[Command]:
         return cls._all
-
-    @classmethod
-    def register(cls, command: Command) -> None:
-        cls._all.append(command)

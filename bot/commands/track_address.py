@@ -10,7 +10,7 @@ from bot.settings import ADMIN_CHAT_ID
 
 @send_action(ChatAction.TYPING)
 @moshnar_command
-def track_address(update: Update, context: CallbackContext):
+def track_address(update: Update, context: CallbackContext) -> None:
     try:
         args = context.args
         if not args:
@@ -21,24 +21,10 @@ def track_address(update: Update, context: CallbackContext):
             if address == 'random':
                 address = app_context.blockchain_client.get_random_address_with_unconfirmed_tx()
 
-            status = app_context.tracking_manager.create_tracking(address, update.message)
+            new_tracking = app_context.tracking_manager.track_address(address, update.message, context.bot)
 
-            if status.in_progress():
+            if new_tracking:
                 app_context.bot.send_message(ADMIN_CHAT_ID, f'New tracking from user {update.message.from_user.username}: {address}')
 
-    except Exception as e:
-        logging.exception(e)
-
-
-# TODO: move to main track command with args
-@send_action(ChatAction.TYPING)
-@moshnar_command
-def track_random_address(update: Update, context: CallbackContext):
-    try:
-        address = app_context.blockchain_client.get_random_address_with_unconfirmed_tx()
-        status = app_context.tracking_manager.create_tracking(address, update.message)
-
-        if status.in_progress():
-            app_context.bot.send_message(ADMIN_CHAT_ID, f'new tracking from user {update.message.from_user.username}: {address}')
     except Exception as e:
         logging.exception(e)

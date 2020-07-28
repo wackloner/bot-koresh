@@ -5,9 +5,8 @@ from typing import Tuple, Optional, Dict, ClassVar
 
 import requests
 
-from bot.settings import OLD_TRANSACTION_AGE, CONFIRMATIONS_NEEDED, PROXIES
-from utils.str_utils import timedelta_to_str
-from model.tracking import TrackingStatus, TransactionInfo
+from bot.settings import CONFIRMATIONS_NEEDED, PROXIES
+from model.tracking import AddressStatus, TransactionInfo
 
 from bot.validator import is_valid_bitcoin_address
 
@@ -39,39 +38,37 @@ class BlockchainClient:
         self._cache[address] = self._get_tx_info(last_transaction)
         return self._cache[address]
 
-    def check_address(self, address: str) -> Tuple[TrackingStatus, Optional[TransactionInfo]]:
+    def check_address(self, address: str) -> Tuple[AddressStatus, Optional[TransactionInfo]]:
         if not is_valid_bitcoin_address(address):
             logging.error(f'Invalid bitcoin address: {address}')
-            return TrackingStatus.INVALID_HASH, None
+            return AddressStatus.INVALID_HASH, None
 
         logging.debug(f'get --> {address}')
         response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
+        now = datetime.now()
 
         # TODO: restart tor
         if response.status_code == 429:
             logging.error(f'{response.headers}')
         if response.status_code != 200:
             logging.error(f'Failed to check {address}')
-            return TrackingStatus.FAILED, None
+            return AddressStatus.CHECK_FAILED, None
 
         address_info = response.json()
         if address_info['n_tx'] == 0:
-            return TrackingStatus.NO_TRANSACTIONS, None
+            return AddressStatus.NO_TRANSACTIONS, None
 
+        # TODO: return list of all unconfirmed txs
         last_transaction = address_info['txs'][0]
-        tx_info = self._get_tx_info(last_transaction)
+        tx_info = self._get_tx_info(last_transaction, now)
 
         if tx_info.confirmations_count is None:
-            return TrackingStatus.FAILED, None
-
-        if tx_info.age > OLD_TRANSACTION_AGE:
-            logging.info(f'Last tx {tx_info.hash} is too old: {timedelta_to_str(tx_info.age)}')
-            return TrackingStatus.TRANSACTION_IS_OLD, tx_info
+            return AddressStatus.CHECK_FAILED, None
 
         if tx_info.confirmations_count >= CONFIRMATIONS_NEEDED:
-            return TrackingStatus.CONFIRMED, tx_info
+            return AddressStatus.CONFIRMED, tx_info
         else:
-            return TrackingStatus.NOT_CONFIRMED, tx_info
+            return AddressStatus.NOT_CONFIRMED, tx_info
 
     def get_confirmations_count(self, tx: str) -> Optional[int]:
         response = requests.get(f'{self.BASE_URL}/rawtx/{tx}', proxies=PROXIES)
@@ -93,11 +90,11 @@ class BlockchainClient:
 
         return total_blocks - block_height + 1
 
-    def _get_tx_info(self, last_transaction: Dict[str, str]) -> TransactionInfo:
+    def _get_tx_info(self, last_transaction: Dict[str, str], updated_at: datetime) -> TransactionInfo:
         tx_hash = last_transaction['hash']
         tx_created_at = datetime.fromtimestamp(int(last_transaction['time']))
         confirmations_cnt = self.get_confirmations_count(tx_hash)
-        return TransactionInfo(tx_hash, tx_created_at, confirmations_cnt)
+        return TransactionInfo(tx_hash, tx_created_at, confirmations_cnt, updated_at)
 
     def get_unconfirmed_txs(self):
         response = requests.get(f'{self.BASE_URL}/unconfirmed-transactions?format=json', proxies=PROXIES)

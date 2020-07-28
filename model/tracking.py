@@ -1,20 +1,18 @@
 import enum
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
-from typing import Optional, Dict
+from typing import Optional, Dict, List
+
+from dacite import from_dict
+from dataclasses_json import dataclass_json
 
 
-class TrackingStatus(str, enum.Enum):
+class AddressStatus(str, enum.Enum):
     INVALID_HASH = 'invalid_hash'
-    NOT_STARTED = 'not_started'
-    TRANSACTION_IS_OLD = 'transaction_is_too_old'
     NO_TRANSACTIONS = 'no_transactions'
     NOT_CONFIRMED = 'not_confirmed'
     CONFIRMED = 'confirmed'
-    TIMEOUT = 'timeout'
-    FAILED = 'failed'
-    INTERRUPTED = 'interrupted'
+    CHECK_FAILED = 'check_failed'
 
     def is_not_confirmed(self):
         return self == self.NOT_CONFIRMED
@@ -35,36 +33,34 @@ class TrackingStatus(str, enum.Enum):
         return self.is_not_confirmed() or self.has_no_transactions()
 
 
+@dataclass_json
 @dataclass
 class TransactionInfo:
     hash: str
     created_at: datetime
     confirmations_count: int
+    updated_at: datetime
 
     @property
     def age(self) -> timedelta:
         return datetime.now() - self.created_at
 
 
+@dataclass_json
 @dataclass
 class Tracking:
     address: str
     chat_id: int
+    created_at: datetime
+    status: AddressStatus
+    status_updated_at: datetime
 
-    status: TrackingStatus = field(default=TrackingStatus.NOT_STARTED)
-    status_updated_at: float = field(default_factory=time.time)
-    created_at: float = field(default_factory=time.time)
+    transactions: List[TransactionInfo] = field(default_factory=list)
 
-    last_tx_confirmations: Optional[int] = None
+    @classmethod
+    def from_dict(cls, tracking_dict: Dict) -> 'Tracking':
+        return from_dict(data_class=Tracking, data=tracking_dict)
 
-    def to_dict(self) -> Dict:
-        return dict(
-            address=f'"{self.address}"',
-            created_at=self.created_at,
-            chat_id=self.chat_id,
-            status=f'"{self.status}"',
-            status_updated_at=self.status_updated_at
-        )
-
-    def to_json(self) -> str:
-        return '{' + ', '.join([f'"{k}": {v}'for (k, v) in self.to_dict().items()]) + '}'
+    @classmethod
+    def from_dict_o(cls, tracking_dict: Optional[Dict]) -> Optional['Tracking']:
+        return from_dict(data_class=Tracking, data=tracking_dict) if tracking_dict is not None else None

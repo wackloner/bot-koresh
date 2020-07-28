@@ -2,14 +2,11 @@ from datetime import timedelta
 from typing import List, Optional
 
 from bot.settings import CONFIRMATIONS_NEEDED
+from model.emojis import Emojis
 from model.tracking import TransactionInfo
 
 
 HASH_FOOTPRINT_SIZE = 20
-
-UNCONF_EMOJI = '\u274c'
-CONF_EMOJI = '\u2705'
-SUNGLASSES_EMOJI = u'\U0001F60E'
 
 
 def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
@@ -109,7 +106,7 @@ def get_addr_list_html_str(addrs: List[str]) -> str:
 
 # TODO: beautify
 def tx_info_to_str(info: TransactionInfo) -> str:
-    confirmed = CONF_EMOJI if info.confirmations_count >= CONFIRMATIONS_NEEDED else UNCONF_EMOJI
+    confirmed = Emojis.get_confirmation_status_emoji(info.confirmations_count >= CONFIRMATIONS_NEEDED)
     return f'<pre>{confirmed}[{info.confirmations_count} confirmations]</pre>\n' \
            f'<code>[tx</code> {get_tx_url_html_str(info.hash)}<code>]</code>\n' \
            f'<pre>[created {info.created_at}]</pre>\n'

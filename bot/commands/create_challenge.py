@@ -3,14 +3,14 @@ from datetime import timedelta, datetime
 from typing import Optional
 
 from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext, Dispatcher, CommandHandler, CallbackQueryHandler
+from telegram.ext import CallbackContext, Dispatcher, CallbackQueryHandler
 
 from bot.commands.button_handler import button_handler
+from model.emojis import Emojis
 from utils.classes.decorators import send_action, moshnar_command
 from bot.context import app_context
 from model.challenge import Challenge
 from utils.callback_context_utils import get_chat_data
-from utils.str_utils import CONF_EMOJI, UNCONF_EMOJI, SUNGLASSES_EMOJI
 
 
 DEFAULT_DURATION = timedelta(minutes=10)
@@ -60,8 +60,8 @@ def handle_challenge(update: Update, context: CallbackContext):
 
 def get_challenge_reply_markup(challenge_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton(f'{CONF_EMOJI}ЖМЯК', callback_data=f'add {challenge_id}')],
-        [InlineKeyboardButton(f'{UNCONF_EMOJI}Убрать', callback_data=f'remove {challenge_id}')]
+        [InlineKeyboardButton(f'{Emojis.GREEN_CHECK_MARK}ЖМЯК', callback_data=f'add {challenge_id}')],
+        [InlineKeyboardButton(f'{Emojis.RED_CROSS}Убрать', callback_data=f'remove {challenge_id}')]
     ])
 
 
@@ -84,7 +84,7 @@ def create_challenge(update: Update, context: CallbackContext):
             except Exception:
                 pass
 
-        challenge_text = f'Время по-нажимать{SUNGLASSES_EMOJI}'
+        challenge_text = f'Время по-нажимать{Emojis.SUNGLASSES}'
         if len(context.args) > 1:
             parsed_text = parse_challenge_text(update.message.text, duration)
             if parsed_text is not None:
@@ -118,6 +118,5 @@ def create_challenge(update: Update, context: CallbackContext):
         logging.exception(e)
 
 
-def challenge_update_dispatcher(command: 'Command', dp: Dispatcher):
-    dp.add_handler(CommandHandler(command.name, command.handler))
+def challenge_update_dispatcher(dp: Dispatcher):
     dp.add_handler(CallbackQueryHandler(button_handler))
