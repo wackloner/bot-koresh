@@ -3,11 +3,11 @@ import logging
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from model.tracking import AddressStatus
-from utils.classes.decorators import send_action, moshnar_command
-from bot.context import app_context
-from managers.phrase_manager import PhraseManager
-from utils.message_utils import send_tx_info
+from koresh.model.tracking import AddressStatus
+from koresh.utils.classes.decorators import send_action, moshnar_command
+from koresh.bot.context import app_context
+from koresh.managers.phrase_manager import PhraseManager
+from koresh.utils.message_utils import send_tx_info
 
 
 @send_action(ChatAction.TYPING)

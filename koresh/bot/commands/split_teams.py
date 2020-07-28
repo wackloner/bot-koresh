@@ -5,9 +5,9 @@ from typing import List, Optional
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from utils.classes.decorators import moshnar_command, send_action
-from managers.phrase_manager import PhraseManager
-from utils.message_utils import send_message
+from koresh.utils.classes.decorators import moshnar_command, send_action
+from koresh.managers.phrase_manager import PhraseManager
+from koresh.utils.message_utils import send_message
 
 
 def split_people(names: List[str], teams_cnt: int) -> List[List[str]]:

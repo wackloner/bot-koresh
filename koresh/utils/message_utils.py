@@ -3,9 +3,9 @@ from typing import Optional
 
 from telegram import Bot, ParseMode
 
-from model.stickers import Stickers
-from utils.str_utils import tx_info_to_str, get_addr_html_url, datetime_to_str
-from model.tracking import Tracking
+from koresh.model.stickers import Stickers
+from koresh.utils.str_utils import tx_info_to_str, get_addr_html_url, datetime_to_str
+from koresh.model.tracking import Tracking
 
 
 def send_message(context, update, msg):
@@ -32,7 +32,7 @@ def comment_tracking(t: Tracking, msg: str):
     logging.debug(f'Commenting... {t.address}')
 
     # TODO: fix local
-    from bot.context import app_context
+    from koresh.bot.context import app_context
     return app_context.bot.send_message(text=msg, chat_id=t.chat_id, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 

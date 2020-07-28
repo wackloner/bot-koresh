@@ -4,9 +4,9 @@ from datetime import datetime
 from telegram import Update, CallbackQuery
 from telegram.ext import CallbackContext
 
-from bot.context import app_context
-from model.challenge import Winner
-from utils.callback_context_utils import get_chat_data
+from koresh.bot.context import app_context
+from koresh.model.challenge import Winner
+from koresh.utils.callback_context_utils import get_chat_data
 
 
 CONNECTION_DELAY = 1.5

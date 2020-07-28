@@ -3,58 +3,52 @@ import os
 import sys
 from datetime import timedelta
 from logging.handlers import TimedRotatingFileHandler
-from typing import Optional, ClassVar
+from typing import Optional
 
 from dotenv import load_dotenv
 
 
+# TODO: refactor to have all the settings in a separate file
+VERSION = '1.4.2'
+
 load_dotenv()
 
+BOT_API_TOKEN = os.environ['BOT_API_TOKEN']
+TRANSLATOR_API_KEY = os.environ.get('TRANSLATOR_API_KEY')
 
-API_TOKEN = os.environ['API_TOKEN']
 PROXY_URL = 'socks5h://localhost:9050'
-
 PROXIES = dict(
     http='socks5h://localhost:9050',
     https='socks5h://localhost:9050'
 )
+UPDATER_ARGS = {
+    'proxy_url': PROXY_URL
+}
 
-ADMIN_CHAT_ID: Optional[int] = os.environ.get('ADMIN_CHAT_ID', None)
-DATA_STORAGE_MESSAGE_ID: Optional[int] = os.environ.get('DATA_STORAGE_MESSAGE_ID', None)
+BOT_CHAT_ID = os.environ['BOT_CHAT_ID']
+ADMIN_CHAT_ID = os.environ['ADMIN_CHAT_ID']
+
+# TODO: handle it's not set
+BACKUP_MESSAGE_ID: Optional[int] = os.environ.get('BACKUP_MESSAGE_ID', None)
 
 STORAGE_DIR = os.environ.get('STORAGE_DIR', f'{os.getcwd()}/.data_storage')
 os.makedirs(STORAGE_DIR, exist_ok=True)
-
-# TODO: env
-MY_CHAT_ID = 60972166
-
-TRANSLATOR_API_KEY = os.environ.get('TRANSLATOR_API_KEY')
-
-
-VERSION = '1.3.3'
 
 CONFIRMATIONS_NEEDED = 2
 COMMAND_RETRIES = 2
 OLD_TRANSACTION_AGE = timedelta(hours=6)
 
-
-# TODO: try faster
+# TODO: try more often
 TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=60)
 
 TTL_IN_STATUS = timedelta(hours=2)
 
 MAX_USER_PHOTOS = 13
-
-SLADKO_EVERY_NTH_MESSAGE = 50
-
+SLADKO_EVERY_NTH_MESSAGE = 77
 SAVE_LAST_MESSAGES_CNT = 10
 
-LOGGING_LEVEL = logging.DEBUG
+LOGGING_LEVEL = logging.INFO
 TELEGRAM_API_LOGGING_LEVEL = logging.INFO
-
-UPDATER_ARGS = {
-    'proxy_url': PROXY_URL
-}
 
 LOGS_DIR = f'{os.getcwd()}/.logs'
 os.makedirs(LOGS_DIR, exist_ok=True)

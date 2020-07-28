@@ -7,14 +7,14 @@ from typing import Optional
 import requests
 from telegram.ext import CallbackContext
 
-from bot.commands.delete_after import delete_after_f
-from bot.context import app_context
-from bot.settings import PROXIES, API_TOKEN, STORAGE_DIR
+from koresh.bot.commands.delete_after import delete_after_f
+from koresh.bot.context import app_context
+from koresh.bot.settings import PROXIES, BOT_API_TOKEN, STORAGE_DIR
 
 
 # TODO: store in user object
-from model.user import FileInfo
-from utils.str_utils import parse_time
+from koresh.model.user import FileInfo
+from koresh.utils.str_utils import parse_time
 
 
 def get_user_dir(user_name: Optional[str]) -> str:
@@ -82,8 +82,8 @@ def save_photo(context: CallbackContext, file_id: str, user_id: Optional[int] = 
     logging.info(f"Got photo '{file_id}'")
     try:
         # TODO: refactor
-        logging.debug(f'GET -> https://api.telegram.org/bot{API_TOKEN}/getFile?file_id={file_id}')
-        response = requests.get(f'https://api.telegram.org/bot{API_TOKEN}/getFile?file_id={file_id}', proxies=PROXIES)
+        logging.debug(f'GET -> https://api.telegram.org/bot{BOT_API_TOKEN}/getFile?file_id={file_id}')
+        response = requests.get(f'https://api.telegram.org/bot{BOT_API_TOKEN}/getFile?file_id={file_id}', proxies=PROXIES)
 
         if response.status_code != 200:
             logging.error(f'~~~ {response.status_code}\n{response.headers}')
@@ -94,8 +94,8 @@ def save_photo(context: CallbackContext, file_id: str, user_id: Optional[int] = 
 
         file_path = file_info['file_path']
 
-        logging.debug(f'GET -> https://api.telegram.org/file/bot{API_TOKEN}/{file_path}')
-        response = requests.get(f'https://api.telegram.org/file/bot{API_TOKEN}/{file_path}', proxies=PROXIES)
+        logging.debug(f'GET -> https://api.telegram.org/file/bot{BOT_API_TOKEN}/{file_path}')
+        response = requests.get(f'https://api.telegram.org/file/bot{BOT_API_TOKEN}/{file_path}', proxies=PROXIES)
         if response.status_code != 200:
             logging.error(f'~~~ {response.status_code}\n{response.headers}')
             return False

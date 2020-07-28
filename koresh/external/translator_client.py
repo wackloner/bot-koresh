@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import requests
 
-from bot.settings import TRANSLATOR_API_KEY
+from koresh.bot.settings import TRANSLATOR_API_KEY
 
 
 @dataclass

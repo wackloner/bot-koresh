@@ -1,9 +1,9 @@
 from datetime import timedelta, datetime
 from typing import List, Optional
 
-from bot.settings import CONFIRMATIONS_NEEDED
-from model.emojis import Emojis
-from model.tracking import TransactionInfo
+from koresh.bot.settings import CONFIRMATIONS_NEEDED
+from koresh.model.emojis import Emojis
+from koresh.model.tracking import TransactionInfo
 
 
 TX_HASH_FOOTPRINT_SIZE = 20

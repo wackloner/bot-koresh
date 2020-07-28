@@ -5,23 +5,23 @@ from typing import List, Optional
 from telegram import Update, Message, User
 from telegram.ext import CallbackContext
 
-from bot.commands.admin_mode import is_admin, try_process_admin_command
-from bot.commands.create_challenge import create_challenge
-from bot.commands.troll_mode import is_troll
-from utils.classes.decorators import moshnar_command
-from bot.commands.delete_after import delete_after_f
-from bot.commands.save_photo import save_photo, get_user_dir
-from bot.commands.split_teams import split_into_teams
-from bot.context import app_context
-from bot.settings import MY_CHAT_ID
-from bot.validator import is_valid_bitcoin_address
-from managers.phrase_manager import PhraseManager
-from utils.message_utils import send_sladko
+from koresh.bot.commands.admin_mode import is_admin, try_process_admin_command
+from koresh.bot.commands.create_challenge import create_challenge
+from koresh.bot.commands.troll_mode import is_troll
+from koresh.utils.classes.decorators import moshnar_command
+from koresh.bot.commands.delete_after import delete_after_f
+from koresh.bot.commands.save_photo import save_photo
+from koresh.bot.commands.split_teams import split_into_teams
+from koresh.bot.context import app_context
+from koresh.bot.settings import BOT_CHAT_ID
+from koresh.bot.validator import is_valid_bitcoin_address
+from koresh.managers.phrase_manager import PhraseManager
+from koresh.utils.message_utils import send_sladko
 
 
 # TODO: make parse_utils or Parser
-from utils.parse_utils import get_alpha_part
-from utils.str_utils import parse_time_to_seconds
+from koresh.utils.parse_utils import get_alpha_part
+from koresh.utils.str_utils import parse_time_to_seconds
 
 
 def have_start_in_list(tokens: List[str], starts: List[str]) -> bool:
@@ -72,7 +72,7 @@ def are_in_a_row(tokens: List[str], words: List[str]) -> bool:
 
 
 def is_my_chat(update: Update) -> bool:
-    return update.message.chat.id == MY_CHAT_ID
+    return update.message.chat.id == BOT_CHAT_ID
 
 
 def is_split_request(tokens: List[str]) -> bool:

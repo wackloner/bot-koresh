@@ -5,12 +5,12 @@ from typing import Optional
 from telegram import ChatAction, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, Dispatcher, CallbackQueryHandler
 
-from bot.commands.button_handler import button_handler
-from model.emojis import Emojis
-from utils.classes.decorators import send_action, moshnar_command
-from bot.context import app_context
-from model.challenge import Challenge
-from utils.callback_context_utils import get_chat_data
+from koresh.bot.commands.button_handler import button_handler
+from koresh.model.emojis import Emojis
+from koresh.utils.classes.decorators import send_action, moshnar_command
+from koresh.bot.context import app_context
+from koresh.model.challenge import Challenge
+from koresh.utils.callback_context_utils import get_chat_data
 
 
 DEFAULT_DURATION = timedelta(minutes=10)

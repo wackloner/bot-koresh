@@ -8,12 +8,12 @@ from typing import Optional, List, Dict
 from pymongo.collection import Collection
 from telegram import Message, ParseMode, Bot
 
-from external.blockchain_client import BlockchainClient
-from managers.db_manager import DBManager
-from utils.message_utils import send_tx_info, send_tracking_info_full
-from bot.settings import TTL_IN_STATUS
-from utils.str_utils import timedelta_to_str, get_addr_html_url
-from model.tracking import Tracking, AddressStatus, TransactionInfo
+from koresh.external.blockchain_client import BlockchainClient
+from koresh.managers.db_manager import DBManager
+from koresh.utils.message_utils import send_tx_info, send_tracking_info_full
+from koresh.bot.settings import TTL_IN_STATUS
+from koresh.utils.str_utils import timedelta_to_str, get_addr_html_url
+from koresh.model.tracking import Tracking, AddressStatus, TransactionInfo
 
 
 # TODO: schedule backups

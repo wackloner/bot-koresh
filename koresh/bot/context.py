@@ -5,12 +5,12 @@ from typing import Optional
 from telegram import Bot
 from telegram.ext import Updater, Job
 
-from external.blockchain_client import BlockchainClient
-from external.translator_client import TranslatorClient
-from managers.db_manager import DBManager
-from managers.user_manager import UserManager
-from bot.settings import API_TOKEN, UPDATER_ARGS
-from managers.tracking_manager import TrackingManager
+from koresh.external.blockchain_client import BlockchainClient
+from koresh.external.translator_client import TranslatorClient
+from koresh.managers.db_manager import DBManager
+from koresh.managers.user_manager import UserManager
+from koresh.bot.settings import BOT_API_TOKEN, UPDATER_ARGS
+from koresh.managers.tracking_manager import TrackingManager
 
 
 @dataclass
@@ -23,7 +23,7 @@ class Context:
 
     @cached_property
     def updater(self) -> Updater:
-        return Updater(API_TOKEN, use_context=True, request_kwargs=UPDATER_ARGS)
+        return Updater(BOT_API_TOKEN, use_context=True, request_kwargs=UPDATER_ARGS)
 
     @cached_property
     def bot(self) -> Bot:

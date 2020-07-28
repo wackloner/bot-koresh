@@ -3,11 +3,11 @@ from typing import Optional, List
 
 from telegram.ext import CallbackContext, Job
 
-from bot.context import app_context
-from bot.settings import TRACKINGS_UPDATE_INTERVAL
-from managers.phrase_manager import PhraseManager
-from model.tracking import AddressStatus, TransactionInfo
-from utils.message_utils import send_tx_info
+from koresh.bot.context import app_context
+from koresh.bot.settings import TRACKINGS_UPDATE_INTERVAL
+from koresh.managers.phrase_manager import PhraseManager
+from koresh.model.tracking import AddressStatus, TransactionInfo
+from koresh.utils.message_utils import send_tx_info
 
 
 def transactions_changed(old_txs: List[TransactionInfo], new_txs: List[TransactionInfo]) -> bool:

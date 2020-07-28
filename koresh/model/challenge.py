@@ -5,8 +5,8 @@ from typing import Dict, Set
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Bot, ParseMode
 
-from model.emojis import Emojis
-from utils.str_utils import timedelta_to_str, tries_to_str
+from koresh.model.emojis import Emojis
+from koresh.utils.str_utils import timedelta_to_str, tries_to_str
 
 
 @dataclass

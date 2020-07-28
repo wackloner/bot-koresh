@@ -5,10 +5,10 @@ from functools import wraps
 from telegram import Update, User, Message
 from telegram.ext import CallbackContext
 
-from bot.context import app_context
-from bot.settings import SLADKO_EVERY_NTH_MESSAGE, COMMAND_RETRIES, SAVE_LAST_MESSAGES_CNT
-from utils.message_utils import send_sladko
-from utils.callback_context_utils import increase_messages_count
+from koresh.bot.context import app_context
+from koresh.bot.settings import SLADKO_EVERY_NTH_MESSAGE, COMMAND_RETRIES, SAVE_LAST_MESSAGES_CNT
+from koresh.utils.message_utils import send_sladko
+from koresh.utils.callback_context_utils import increase_messages_count
 
 
 # TODO: move to utility_classes dir

@@ -4,8 +4,8 @@ from typing import Optional
 
 from pymongo.collection import Collection
 
-from managers.db_manager import DBManager
-from model.user import User, FileInfo
+from koresh.managers.db_manager import DBManager
+from koresh.model.user import User, FileInfo
 
 
 @dataclass

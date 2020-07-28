@@ -4,18 +4,18 @@ from typing import ClassVar, List
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from bot.commands.abstract_command import Command
-from bot.commands.admin_mode import admin_mode
-from bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher
-from bot.commands.translate import translate_handle
-from utils.classes.decorators import send_action, moshnar_command
-from bot.commands.show_tracked import show_tracked
-from bot.commands.split_teams import split_into_teams
-from bot.commands.start import start
-from bot.commands.track_address import track_address
-from bot.commands.troll_mode import troll_mode
+from koresh.bot.commands.abstract_command import Command
+from koresh.bot.commands.admin_mode import admin_mode
+from koresh.bot.commands.create_challenge import handle_challenge, challenge_update_dispatcher
+from koresh.bot.commands.translate import translate_handle
+from koresh.utils.classes.decorators import send_action, moshnar_command
+from koresh.bot.commands.show_tracked import show_tracked
+from koresh.bot.commands.split_teams import split_into_teams
+from koresh.bot.commands.start import start
+from koresh.bot.commands.track_address import track_address
+from koresh.bot.commands.troll_mode import troll_mode
 
-from managers.phrase_manager import PhraseManager
+from koresh.managers.phrase_manager import PhraseManager
 
 
 @send_action(ChatAction.TYPING)

@@ -3,7 +3,7 @@ from time import sleep
 from telegram import Update, ChatAction
 from telegram.ext import CallbackContext
 
-from utils.classes.decorators import send_action, moshnar_command
+from koresh.utils.classes.decorators import send_action, moshnar_command
 
 
 def is_troll(context: CallbackContext) -> bool:

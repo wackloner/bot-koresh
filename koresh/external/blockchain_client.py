@@ -5,11 +5,11 @@ from typing import Tuple, Optional, Dict, ClassVar
 
 import requests
 
-from bot.settings import CONFIRMATIONS_NEEDED, PROXIES
-from model.tracking import AddressStatus, TransactionInfo
+from koresh.bot.settings import CONFIRMATIONS_NEEDED, PROXIES
+from koresh.model.tracking import AddressStatus, TransactionInfo
 
-from bot.validator import is_valid_bitcoin_address
-from utils.environment_utils import restart_tor
+from koresh.bot.validator import is_valid_bitcoin_address
+from koresh.utils.environment_utils import restart_tor
 
 
 @dataclass

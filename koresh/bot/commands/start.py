@@ -3,8 +3,8 @@ import logging
 from telegram import ChatAction, Update
 from telegram.ext import CallbackContext
 
-from utils.classes.decorators import send_action, moshnar_command
-from managers.phrase_manager import PhraseManager
+from koresh.utils.classes.decorators import send_action, moshnar_command
+from koresh.managers.phrase_manager import PhraseManager
 
 
 @send_action(ChatAction.TYPING)

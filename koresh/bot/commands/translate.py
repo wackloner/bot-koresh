@@ -1,8 +1,8 @@
 from telegram import Update, ChatAction
 from telegram.ext import CallbackContext
 
-from bot.context import app_context
-from utils.classes.decorators import send_action, moshnar_command
+from koresh.bot.context import app_context
+from koresh.utils.classes.decorators import send_action, moshnar_command
 
 
 @send_action(ChatAction.TYPING)
