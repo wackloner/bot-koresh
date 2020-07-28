@@ -58,12 +58,11 @@ class TrackingManager:
         logging.debug(f'--> {t.address} in state {status}{additional_info_str}')
 
         if status != t.status:
-            res = self.db.update_one({'address': t.address}, {'$set': {'status': status, 'status_updated_at': now}})
+            res = self.db.update_one({'address': t.address}, {'$set': {'status': status}})
             if res.modified_count == 0:
                 logging.error(f'Failed to update status for address {t.address}')
-            else:
-                updated.status = status
-                updated.status_updated_at = now
+                return updated
+            updated.status = status
 
         if tx_info:
             for tx in updated.transactions:
@@ -72,23 +71,22 @@ class TrackingManager:
                         logging.debug(f'{tx.conf_cnt} -> {tx_info.conf_cnt}')
                         res = self.db.update_one(
                             {'transactions.hash': tx.hash},
-                            {'$set': {
-                                'transactions.$.confirmations_cnt': tx.conf_cnt,
-                                'transactions.$.updated_at': now
-                            }}
+                            {'$set': {'transactions.$.conf_cnt': tx.conf_cnt}}
                         )
                         if res.modified_count == 0:
                             logging.error(f'Failed to update info for tx {tx.hash}')
-                        else:
-                            tx.conf_cnt = tx_info.conf_cnt
-                            tx.updated_at = now
+                            return updated
+                        tx.conf_cnt = tx_info.conf_cnt
+
+        self.db.update_one({'address': t.address}, {'$set': {'updated_at': now}})
 
         return updated
 
     def remove_tracking(self, t: Tracking) -> bool:
         res = self.db.delete_one({'address': t.address})
         if res.deleted_count > 0:
-            del self.trackings_by_hash[t.address]
+            if t.address in self.trackings_by_hash:
+                del self.trackings_by_hash[t.address]
             return True
         return False
 

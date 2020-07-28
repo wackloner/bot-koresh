@@ -7,7 +7,7 @@ from model.tracking import TransactionInfo
 
 
 TX_HASH_FOOTPRINT_SIZE = 20
-ADDRESS_HASH_FOOTPRINT_SIZE = 25
+ADDRESS_HASH_FOOTPRINT_SIZE = 15
 
 
 def unit_to_str(count: int, one: str, no_one: str, no_many: str) -> str:
@@ -94,7 +94,7 @@ def parse_time(token: str) -> Optional[timedelta]:
 
 
 def datetime_to_str(d: datetime) -> str:
-    return d.strftime('%H:%M %d/%m/%y')
+    return d.strftime('%H:%M:%S')
 
 
 def get_addr_url(addr: str) -> str:
@@ -109,11 +109,11 @@ def get_addr_list_html_str(addrs: List[str]) -> str:
     return '\n'.join(map(get_addr_html_url, addrs))
 
 
-# TODO: beautify
 def tx_info_to_str(info: TransactionInfo) -> str:
     confirmed = Emojis.get_confirmation_status_emoji(info.conf_cnt >= CONFIRMATIONS_NEEDED)
-    return f'<code>[txid </code>{get_tx_url_html_str(info.hash)}<code>]</code>\n' \
-           f'<pre>{confirmed}[{info.conf_cnt} conf][{datetime_to_str(info.created_at)}]</pre>\n'
+    return f'<code>[{confirmed}][</code><a href=\'{get_tx_url(info.hash)}\'>' \
+           f'{info.conf_cnt} confirmations</a><code>]</code>\n' \
+           f'<code>[created {datetime_to_str(info.created_at)}]</code>'
 
 
 def get_tx_url(tx_hash: str) -> str:

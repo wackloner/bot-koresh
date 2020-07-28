@@ -53,7 +53,7 @@ class Tracking:
     chat_id: int
     created_at: datetime
     status: AddressStatus
-    status_updated_at: datetime
+    updated_at: datetime
 
     transactions: List[TransactionInfo] = field(default_factory=list)
 

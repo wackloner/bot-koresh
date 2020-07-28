@@ -72,6 +72,7 @@ def parse_challenge_text(text: str, duration: timedelta) -> Optional[str]:
         return text if not text == '' else None
 
 
+# TODO: save challenges to mongodb
 def create_challenge(update: Update, context: CallbackContext):
     global jobs
 

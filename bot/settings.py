@@ -56,7 +56,6 @@ UPDATER_ARGS = {
     'proxy_url': PROXY_URL
 }
 
-
 LOGS_DIR = f'{os.getcwd()}/.logs'
 os.makedirs(LOGS_DIR, exist_ok=True)
 # 10000 here means infinity

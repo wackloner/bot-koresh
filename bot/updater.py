@@ -30,19 +30,19 @@ def update_trackings(context: CallbackContext):
 
             if updated.status != t.status:
                 if updated.status == AddressStatus.NOT_CONFIRMED:
-                    send_tx_info(t, 'Так-то опачи))')
+                    send_tx_info(updated, 'Так-то опачи))')
                     continue
 
                 if updated.status == AddressStatus.CONFIRMED:
-                    send_tx_info(t, PhraseManager.just_confirmed_reaction())
-                    if app_context.tracking_manager.remove_tracking(t):
-                        logging.debug(f'Address {t.address} was removed.')
+                    send_tx_info(updated, PhraseManager.just_confirmed_reaction())
+                    if app_context.tracking_manager.remove_tracking(updated):
+                        logging.debug(f'Address {updated.address} was removed.')
                     else:
-                        logging.debug(f'Failed to remove address {t.address}.')
+                        logging.debug(f'Failed to remove address {updated.address}.')
                     continue
 
-            if t.status == AddressStatus.NOT_CONFIRMED and transactions_changed(t.transactions, updated.transactions):
-                send_tx_info(t, 'Так-с так-с што тут у н а н а с . . .')
+            if updated.status == AddressStatus.NOT_CONFIRMED and transactions_changed(t.transactions, updated.transactions):
+                send_tx_info(updated, 'Так-с так-с так-с што тут у н а с ) )  (хех плотный лол)')
 
     except Exception as e:
         logging.exception(e)

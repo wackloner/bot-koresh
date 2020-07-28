@@ -9,6 +9,7 @@ from bot.settings import CONFIRMATIONS_NEEDED, PROXIES
 from model.tracking import AddressStatus, TransactionInfo
 
 from bot.validator import is_valid_bitcoin_address
+from utils.environment_utils import restart_tor
 
 
 @dataclass
@@ -43,16 +44,22 @@ class BlockchainClient:
             logging.error(f'Invalid bitcoin address: {address}')
             return AddressStatus.INVALID_HASH, None
 
-        logging.debug(f'get --> {address}')
-        response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
-        now = datetime.now()
+        # TODO: refactor
+        iter_num = 1
+        while iter_num < 3:
+            logging.debug(f'GET --> {address}')
+            response = requests.get(f'{self.BASE_URL}/rawaddr/{address}', proxies=PROXIES)
+            now = datetime.now()
 
-        # TODO: restart tor
-        if response.status_code == 429:
-            logging.error(f'{response.headers}')
-        if response.status_code != 200:
-            logging.error(f'Failed to check {address}')
-            return AddressStatus.CHECK_FAILED, None
+            if response.status_code == 200:
+                break
+
+            iter_num += 1
+            logging.error(f'---> {response.status_code}: Failed to check {address}:\n{response.headers}')
+            if response.status_code == 429:
+                restart_tor()
+            if iter_num == 3:
+                return AddressStatus.CHECK_FAILED, None
 
         address_info = response.json()
         if address_info['n_tx'] == 0:
@@ -70,6 +77,7 @@ class BlockchainClient:
         else:
             return AddressStatus.NOT_CONFIRMED, tx_info
 
+    # TODO: optimize, recalculate only when a new block comes
     def get_confirmations_count(self, tx: str) -> Optional[int]:
         response = requests.get(f'{self.BASE_URL}/rawtx/{tx}', proxies=PROXIES)
         if response.status_code != 200:

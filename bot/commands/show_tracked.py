@@ -24,13 +24,13 @@ def show_tracked(update: Update, context: CallbackContext):
             return
 
         for t in tracked:
-            app_context.tracking_manager.update_tracking(t)
-            send_tx_info(t)
-            if t.status == AddressStatus.CONFIRMED:
-                if app_context.tracking_manager.remove_tracking(t):
-                    logging.debug(f'Address {t.address} was removed.')
+            updated = app_context.tracking_manager.update_tracking(t)
+            send_tx_info(updated)
+            if updated.status == AddressStatus.CONFIRMED:
+                if app_context.tracking_manager.remove_tracking(updated):
+                    logging.debug(f'Address {updated.address} was removed.')
                 else:
-                    logging.debug(f'Failed to remove address {t.address}.')
+                    logging.debug(f'Failed to remove address {updated.address}.')
 
     except Exception as e:
         logging.exception(e)

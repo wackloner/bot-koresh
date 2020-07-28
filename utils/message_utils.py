@@ -4,7 +4,7 @@ from typing import Optional
 from telegram import Bot, ParseMode
 
 from model.stickers import Stickers
-from utils.str_utils import tx_info_to_str, get_addr_html_url
+from utils.str_utils import tx_info_to_str, get_addr_html_url, datetime_to_str
 from model.tracking import Tracking
 
 
@@ -18,7 +18,8 @@ def send_tx_info(t: Tracking, msg: Optional[str] = None):
 
 def send_tracking_info_full(t: Tracking, msg_before: Optional[str] = None, msg_after: Optional[str] = None):
     txs_str = '\n\n'.join([tx_info_to_str(tx_info) for tx_info in t.transactions])
-    output = f'{get_addr_html_url(t.address)}\n{txs_str}'
+    upd_str = f'<code>[updated {datetime_to_str(t.updated_at)}]</code>'
+    output = f'<code>[</code>{get_addr_html_url(t.address)}<code>]</code>\n{txs_str}\n{upd_str}\n'
     if msg_before is not None:
         output = f'{msg_before}\n\n' + output
     if msg_after is not None:
