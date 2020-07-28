@@ -62,10 +62,10 @@ class BlockchainClient:
         last_transaction = address_info['txs'][0]
         tx_info = self._get_tx_info(last_transaction, now)
 
-        if tx_info.conf_count is None:
+        if tx_info.conf_cnt is None:
             return AddressStatus.CHECK_FAILED, None
 
-        if tx_info.conf_count >= CONFIRMATIONS_NEEDED:
+        if tx_info.conf_cnt >= CONFIRMATIONS_NEEDED:
             return AddressStatus.CONFIRMED, tx_info
         else:
             return AddressStatus.NOT_CONFIRMED, tx_info

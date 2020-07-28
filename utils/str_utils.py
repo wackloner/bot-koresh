@@ -111,9 +111,9 @@ def get_addr_list_html_str(addrs: List[str]) -> str:
 
 # TODO: beautify
 def tx_info_to_str(info: TransactionInfo) -> str:
-    confirmed = Emojis.get_confirmation_status_emoji(info.conf_count >= CONFIRMATIONS_NEEDED)
+    confirmed = Emojis.get_confirmation_status_emoji(info.conf_cnt >= CONFIRMATIONS_NEEDED)
     return f'<code>[txid </code>{get_tx_url_html_str(info.hash)}<code>]</code>\n' \
-           f'<pre>{confirmed}[{info.conf_count} conf][{datetime_to_str(info.created_at)}]</pre>\n'
+           f'<pre>{confirmed}[{info.conf_cnt} conf][{datetime_to_str(info.created_at)}]</pre>\n'
 
 
 def get_tx_url(tx_hash: str) -> str:

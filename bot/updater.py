@@ -17,7 +17,7 @@ def transactions_changed(old_txs: List[TransactionInfo], new_txs: List[Transacti
     old_txs = sorted(old_txs, key=lambda tx: tx.hash)
     new_txs = sorted(new_txs, key=lambda tx: tx.hash)
 
-    return any(old.hash != new.hash or old.conf_count != new.conf_count for old, new in zip(old_txs, new_txs))
+    return any(old.hash != new.hash or old.conf_cnt != new.conf_cnt for old, new in zip(old_txs, new_txs))
 
 
 def update_trackings(context: CallbackContext):

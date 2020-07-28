@@ -5,11 +5,13 @@ name = "pypi"
 
 [packages]
 aiohttp = "*"
+autoflake = "*"
 base58 = "*"
 dacite = "*"
 dataclasses-json = "*"
 idna-ssl = "*"
 pipenv = "*"
+pre-commit = "*"
 psutil = "*"
 pymongo = "*"
 python-dotenv = "*"
@@ -21,4 +23,3 @@ tqdm = "*"
 
 [dev-packages]
 pytest = "*"
-

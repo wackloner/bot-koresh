@@ -38,7 +38,7 @@ class AddressStatus(str, enum.Enum):
 class TransactionInfo:
     hash: str
     created_at: datetime
-    conf_count: int
+    conf_cnt: int
     updated_at: datetime
 
     @property
