@@ -1,5 +1,4 @@
 import logging
-import re
 from time import sleep
 from typing import List, Optional
 
@@ -8,6 +7,7 @@ from telegram.ext import CallbackContext
 
 from koresh.bot.commands.admin_mode import is_admin, try_process_admin_command
 from koresh.bot.commands.create_challenge import create_challenge
+from koresh.bot.commands.show_map import extract_coordinates
 from koresh.bot.commands.troll_mode import is_troll
 from koresh.utils.classes.decorators import moshnar_command
 from koresh.bot.commands.delete_after import delete_after_f
@@ -110,30 +110,26 @@ def default_message_handler(update: Update, context: CallbackContext):
     tokens = text.split() if text is not None else []
     low_tokens = text.lower().split() if text is not None else []
 
-    logging.debug(f'\n----> KEK')
-
-    floats = re.findall(r'\d+\.\d+', message.text)
-    if len(floats) >= 2:
-        coord_str = floats[1] + ',' + floats[0]
-        img_link = app_context.map_client.get_img_link_by_coordinates(coord_str)
-        update.message.reply_photo(photo=img_link)
-
-    floats = [f.replace(',', '.') for f in re.findall(r'\d+,\d+', message.text)]
-    if len(floats) >= 2:
-        coord_str = floats[1] + ',' + floats[0]
-        img_link = app_context.map_client.get_img_link_by_coordinates(coord_str)
-        update.message.reply_photo(photo=img_link)
+    try:
+        coords = extract_coordinates(tokens)
+        if coords:
+            img_link = app_context.map_client.get_img_link_by_coordinates(coords)
+            update.message.reply_photo(photo=img_link)
+    except Exception as e:
+        logging.exception(e)
 
     # TODO: reformat for easy creating of new situations/cases
     for s in tokens:
         try:
             alpha_part = get_alpha_part(s)
             if is_valid_bitcoin_address(alpha_part):
-                app_context.tracking_manager.track_address(alpha_part, message)
+                try:
+                    app_context.tracking_manager.track_address(alpha_part, message, context.bot)
+                except Exception as e:
+                    logging.exception(e)
             return
-        except Exception as e:
+        except Exception:
             pass
-            # logging.error(e)
 
     last_msgs = context.chat_data['last_msgs']
     if len(last_msgs) >= 2 and is_sladko(last_msgs[-1]) and is_sladko(last_msgs[-2]):

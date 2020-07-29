@@ -6,6 +6,7 @@ from telegram import Bot
 from telegram.ext import Updater, Job
 
 from koresh.external.blockchain_client import BlockchainClient
+from koresh.external.map_client import MapClient
 from koresh.external.translator_client import TranslatorClient
 from koresh.managers.db_manager import DBManager
 from koresh.managers.user_manager import UserManager
@@ -28,6 +29,10 @@ class Context:
     @cached_property
     def bot(self) -> Bot:
         return self.updater.bot
+
+    @cached_property
+    def map_client(self) -> MapClient:
+        return MapClient()
 
     @cached_property
     def tracking_manager(self) -> TrackingManager:

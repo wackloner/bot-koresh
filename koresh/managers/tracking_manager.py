@@ -106,7 +106,11 @@ class TrackingManager:
             send_tracking_info_full(found, 'Чел, да я и так палю че по...')
             return found
 
-        status, tx_info = self.blockchain_client.check_address(address)
+        try:
+            status, tx_info = self.blockchain_client.check_address(address)
+        except Exception as e:
+            logging.exception(e)
+            return None
 
         if status == AddressStatus.INVALID_HASH:
             message.reply_text(f'Это хуйня, а не адрес, чел)) {address} - че?)')
