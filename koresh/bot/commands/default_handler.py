@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta, timezone
 from time import sleep
 from typing import List, Optional
 
@@ -130,6 +131,13 @@ def default_message_handler(update: Update, context: CallbackContext):
             return
         except Exception:
             pass
+
+    if sender.first_name in ['Mark', 'Марк']:
+        # TODO: store this info in DB
+        last_hi_o = context.bot_data.get('last_hi_mark', None)
+        if not last_hi_o or datetime.now(timezone.utc) - last_hi_o > timedelta(days=1):
+            reply = message.reply_text('ooh hi Mark)')
+            context.bot_data['last_hi_mark'] = reply.date
 
     last_msgs = context.chat_data['last_msgs']
     if len(last_msgs) >= 2 and is_sladko(last_msgs[-1]) and is_sladko(last_msgs[-2]):
@@ -307,7 +315,7 @@ def default_message_handler(update: Update, context: CallbackContext):
         return
 
     if have_starts(low_tokens, 'вывоз'):
-        update.message.reply_text(PhraseManager.no_vivoz())
+        message.reply_text(PhraseManager.no_vivoz())
         return
 
     if have_starts(low_tokens, 'сешишь'):
