@@ -43,7 +43,7 @@ def get_local_file_path(context: CallbackContext, user_name: Optional[str] = Non
     dst_dir = user_dir
     params = extra_info.split()
 
-    if params[0].startswith('/'):
+    if params and params[0].startswith('/'):
         custom_dir = params[0]
         if custom_dir == '/next':
             custom_dir = f'/{get_next_dir_num(user_name)}'
@@ -69,7 +69,7 @@ def get_local_file_path(context: CallbackContext, user_name: Optional[str] = Non
     return f'{dst_dir}/{now_str}{filename_suf}.jpg'
 
 
-def get_ttl(photo_extra_info: str) -> Optional[timedelta]:
+def get_ttl(photo_extra_info: Optional[str]) -> Optional[timedelta]:
     if photo_extra_info is None:
         return None
     ttls = [parse_time(token) for token in photo_extra_info.split() if parse_time(token) is not None]
@@ -100,7 +100,7 @@ def save_photo(context: CallbackContext, file_id: str, user_id: Optional[int] = 
             logging.error(f'~~~ {response.status_code}\n{response.headers}')
             return False
 
-        if extra_info.startswith('/next'):
+        if extra_info and extra_info.startswith('/next'):
             new_dir_num = get_next_dir_num(user_name)
             message = app_context.bot.send_message(chat_id=chat_id, text=new_dir_num)
             app_context.job_queue.run_once(callback=delete_after_f(message.chat.id, message.message_id), when=timedelta(seconds=60))

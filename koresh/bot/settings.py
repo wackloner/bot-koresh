@@ -25,8 +25,8 @@ UPDATER_ARGS = {
     'proxy_url': PROXY_URL
 }
 
-BOT_CHAT_ID = os.environ['BOT_CHAT_ID']
-ADMIN_CHAT_ID = os.environ['ADMIN_CHAT_ID']
+BOT_CHAT_ID = int(os.environ['BOT_CHAT_ID'])
+ADMIN_CHAT_ID = int(os.environ['ADMIN_CHAT_ID'])
 
 # TODO: handle it's not set
 BACKUP_MESSAGE_ID: Optional[int] = os.environ.get('BACKUP_MESSAGE_ID', None)

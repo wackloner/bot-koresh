@@ -111,6 +111,13 @@ def default_message_handler(update: Update, context: CallbackContext):
     tokens = text.split() if text is not None else []
     low_tokens = text.lower().split() if text is not None else []
 
+    if sender.username == 'Luckmannn':
+        # TODO: store this info in DB
+        last_hi_o = context.bot_data.get('last_hi_mark', None)
+        if not last_hi_o or datetime.now(timezone.utc) - last_hi_o > timedelta(days=1):
+            reply = message.reply_text('ooh hi Mark)')
+            context.bot_data['last_hi_mark'] = reply.date
+
     try:
         coords = extract_coordinates(tokens)
         if coords:
@@ -131,13 +138,6 @@ def default_message_handler(update: Update, context: CallbackContext):
             return
         except Exception:
             pass
-
-    if sender.first_name in ['Mark', 'Марк']:
-        # TODO: store this info in DB
-        last_hi_o = context.bot_data.get('last_hi_mark', None)
-        if not last_hi_o or datetime.now(timezone.utc) - last_hi_o > timedelta(days=1):
-            reply = message.reply_text('ooh hi Mark)')
-            context.bot_data['last_hi_mark'] = reply.date
 
     last_msgs = context.chat_data['last_msgs']
     if len(last_msgs) >= 2 and is_sladko(last_msgs[-1]) and is_sladko(last_msgs[-2]):
@@ -203,21 +203,22 @@ def default_message_handler(update: Update, context: CallbackContext):
         message.reply_text('Мусора сосатб(((')
         return
 
-    if has_mention_of_me(low_tokens):
-        low_tokens = list(filter(lambda token: not token.startswith('кореш') and not token.startswith('корефан'), low_tokens))
-        logging.info(low_tokens)
-    elif not (is_reply_to_me(message) or is_my_chat(update)):
+    try:
+        if has_mention_of_me(low_tokens):
+            low_tokens = list(filter(lambda token: not token.startswith('кореш') and not token.startswith('корефан'), low_tokens))
+            logging.info(low_tokens)
+        elif not (is_reply_to_me(message) or is_my_chat(update)):
+            if is_troll(context):
+                if ')))' in low_tokens[-1]:
+                    message.reply_text('Че такой довольный-то, пидорок?))')
+                    return
 
-        if is_troll(context):
-            if ')))' in low_tokens[-1]:
-                message.reply_text('Че такой довольный-то, пидорок?))')
-                return
-
-            if '(((' in low_tokens[-1]:
-                message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
-                return
-
-        return
+                if '(((' in low_tokens[-1]:
+                    message.reply_text('Да ты не грусти, всё равно ты не бот и скоро сдохнешь')
+                    return
+            return
+    except Exception as e:
+        logging.exception(e)
 
     if message.photo:
         biggest = None
