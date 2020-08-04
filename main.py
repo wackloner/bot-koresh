@@ -3,14 +3,14 @@ import logging
 
 from telegram.ext import MessageHandler, Filters
 
-from koresh.bot.commands.commands import Commands
-from koresh.bot.commands.default_handler import default_message_handler
-from koresh.bot.context import app_context
+from app.bot.commands.commands import Commands
+from app.bot.commands.default_handler import default_message_handler
+from app.bot.context import app_context
 
 
 # TODO: make him inline to have an ability to use it in every conversation
 # TODO: separate class
-from koresh.bot.updater import run_info_updater_if_not
+from app.bot.updater import run_info_updater_if_not
 
 
 def run():
