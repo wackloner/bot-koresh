@@ -10,6 +10,7 @@ class Command:
     name: str
     handler: Callable[[Update, CallbackContext], None]
     help: Optional[str] = None
+    args: Optional[str] = None
 
     additional_dispatcher_update: Optional[Callable] = None
 

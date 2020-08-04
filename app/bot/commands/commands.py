@@ -27,42 +27,35 @@ def show_help(update: Update, context: CallbackContext):
     msg += 'Вообще я так-то 10/10 бот и выкупаю все команды и без ключевых слов, но на случай если ты вдруг не особо '
     msg += 'просекаешь базары или просто не вывозишь, вот тебе список доступных ключевых команд:\n'
     msg += '\n'
-    msg += '\n'.join(list(filter(None, map(lambda cmd: cmd.help, Commands.get_all()))))
+    msg += '\n'.join(list(filter(None, map(lambda cmd: f'/{cmd.name} {cmd.args or ""}- {cmd.help}', Commands.get_all()))))
     update.message.reply_text(msg)
 
 
-# TODO: naming
 @dataclass
 class Commands:
     _all: ClassVar[List[Command]] = [
         Command('start', start),
 
-        # TODO: change to check + button for tracking
         Command('track', track_address_handler, help=
-                f'/track - попалить, '
-                f'какая последняя транзакция на адресе(-ах), и если она есть и ещё не '
+                f'попалить, какая последняя транзакция на адресе(-ах), и если она есть и ещё не '
                 f'дошла, то пиздец пристально последить за ней и СРАЗУ ЖЕ отписать в чат, когда она дойдёт) Можно '
                 f'передать слово random, чтобы последить за рандомным адресом с транзакцией'),
 
         Command('split_teams', split_into_teams, help=
-                f'/split_teams - поделить множество людей на n команд (2 по дефолту)'),
+                f'поделить множество людей на n команд (2 по дефолту)'),
 
-        Command('show_tracked', show_tracked, help=
-                f'/show_tracked - показать все отслеживаемые адреса'),
+        Command('show_tracked', show_tracked, help='показать все отслеживаемые адреса'),
 
-        # TODO: don't write name in help (add it in Command init)
-        Command('show_map', show_map, help=
-                f'/show_map - показать кусок карты по данной локации'),
+        Command('show_map', show_map, args='%lat,%long ', help='показать кусок карты по данной локации'),
 
-        Command('troll_mode', troll_mode, help=
-                f'/troll_mode on/off - тролльмод'),
+        Command('troll_mode', troll_mode, args='on/off ', help='тролльмод, становлюсь игривее)'),
 
-        Command('admin_mode', admin_mode),
-
-        Command('translate', translate_handle),
+        Command('translate', translate_handle, args='%eng_phrase ', help='перевести на русский'),
 
         Command('challenge', handle_challenge, additional_dispatcher_update=challenge_update_dispatcher, help=
-                f'/challenge - скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),
+                f'скинуть в чат кнопку "кто быстрее", если вдруг надо что-то серьёзно порешать'),
+
+        Command('admin_mode', admin_mode),
 
         Command('help', show_help)
     ]

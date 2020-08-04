@@ -51,7 +51,6 @@ def split_into_teams(update: Update, context: CallbackContext):
             talk = lines[0]
             names = lines[1:]
 
-        # TODO: check team_cnt > players_cnt
         logging.debug(talk)
         logging.debug(names)
 
