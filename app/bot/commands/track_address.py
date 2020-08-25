@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 from app.model.tracking import Tracking, AddressStatus
 from app.utils.classes.decorators import send_action, moshnar_command
 from app.bot.context import app_context
-from app.bot.settings import ADMIN_CHAT_ID, TTL_IN_STATUS
+from app.bot.settings import ADMIN_CHAT_ID, TRACKING_TTL
 from app.utils.message_utils import send_tracking_info_full, send_tx_info
 from app.utils.str_utils import get_addr_html_url, timedelta_to_str
 
@@ -42,7 +42,7 @@ def track_address(address: str, message: Message, bot: Bot) -> Optional[Tracking
     new_tracking = app_context.tracking_manager.create(address, chat_id, status, [tx_info])
     if status == AddressStatus.NO_TRANSACTIONS:
         bot.send_message(chat_id, f'Эх, пока ни одной транзакции на {get_addr_html_url(address)}...\n'
-                                  f'Но я понаблюдаю за ним {timedelta_to_str(TTL_IN_STATUS)}, отпишу ес че',
+                                  f'Но я понаблюдаю за ним {timedelta_to_str(TRACKING_TTL)}, отпишу ес че',
                          parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
     if status == AddressStatus.NOT_CONFIRMED:

@@ -4,7 +4,7 @@ from typing import Optional, List
 from telegram.ext import CallbackContext, Job
 
 from app.bot.context import app_context
-from app.bot.settings import TRACKINGS_UPDATE_INTERVAL
+from app.bot.settings import TRACKINGS_UPDATE_INTERVAL, TRACKING_TTL
 from app.managers.phrase_manager import PhraseManager
 from app.model.tracking import AddressStatus, TransactionInfo
 from app.utils.message_utils import send_tx_info
@@ -43,6 +43,14 @@ def update_trackings(context: CallbackContext):
 
             if updated.status == AddressStatus.NOT_CONFIRMED and transactions_changed(t.transactions, updated.transactions):
                 send_tx_info(updated, 'Так-с так-с так-с што тут у н а с ) )  (хех плотный лол)')
+                continue
+
+            if updated.age > TRACKING_TTL:
+                if app_context.tracking_manager.remove_tracking(updated):
+                    logging.debug(f'Address {updated.address} was removed.')
+                else:
+                    logging.debug(f'Failed to remove address {updated.address}.')
+                continue
 
     except Exception as e:
         logging.exception(e)

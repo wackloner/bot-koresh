@@ -57,6 +57,10 @@ class Tracking:
 
     transactions: List[TransactionInfo] = field(default_factory=list)
 
+    @property
+    def age(self) -> timedelta:
+        return self.updated_at - self.created_at
+
     @classmethod
     def from_dict(cls, tracking_dict: Dict) -> 'Tracking':
         return from_dict(data_class=Tracking, data=tracking_dict)

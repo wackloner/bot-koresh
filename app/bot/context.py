@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from functools import cached_property
 from typing import Optional
 
@@ -10,7 +11,7 @@ from app.external.map_client import MapClient
 from app.external.translator_client import TranslatorClient
 from app.managers.db_manager import DBManager
 from app.managers.user_manager import UserManager
-from app.bot.settings import BOT_API_TOKEN, UPDATER_ARGS
+from app.bot.settings import BOT_API_TOKEN, UPDATER_ARGS, HI_MARK_INTERVAL
 from app.managers.tracking_manager import TrackingManager
 
 
@@ -19,6 +20,8 @@ class Context:
     blockchain_client: BlockchainClient = field(default_factory=BlockchainClient)
     translator_client: TranslatorClient = field(default_factory=TranslatorClient)
     db_manager: DBManager = field(default_factory=DBManager)
+
+    last_hi_mark_at: datetime = field(default=datetime.now() - HI_MARK_INTERVAL)
 
     updater_job: Optional[Job] = field(default=None)
 

@@ -61,22 +61,31 @@ class TrackingManager:
             updated.status = status
 
         if tx_info:
+            found = False
             for tx in updated.transactions:
                 if tx.hash == tx_info.hash:
+                    found = True
                     if tx.conf_cnt != tx_info.conf_cnt:
-                        logging.debug(f'{tx.conf_cnt} -> {tx_info.conf_cnt}')
-                        res = self.db.update_one(
-                            {'transactions.hash': tx.hash},
-                            {'$set': {'transactions.$.conf_cnt': tx_info.conf_cnt}}
-                        )
-                        if res.modified_count == 0:
-                            logging.error(f'Failed to update info for tx {tx.hash}')
-                            logging.error(f'{res}')
-                            logging.error(f'{res.raw_result}')
-                            return updated
                         tx.conf_cnt = tx_info.conf_cnt
+                        tx.updated_at = tx_info.updated_at
+                        logging.debug(f'{tx.conf_cnt} -> {tx_info.conf_cnt}')
+                        self.db.update_one(
+                            {'transactions.hash': tx.hash},
+                            {'$set': {'transactions.$.conf_cnt': tx_info.conf_cnt,
+                                      'transactions.$.updated_at': tx_info.updated_at}
+                             }
+                        )
+
+            if not found:
+                updated.transactions.append(tx_info)
+                # TODO: refactor same code
+                self.db.update_one(
+                    {'address': t.address},
+                    {'$push': {'transactions': asdict(tx_info)}}
+                )
 
         self.db.update_one({'address': t.address}, {'$set': {'updated_at': now}})
+        self.trackings_by_hash[t.address] = updated
 
         return updated
 

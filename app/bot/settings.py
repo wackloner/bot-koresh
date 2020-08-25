@@ -43,7 +43,7 @@ TRACKINGS_UPDATE_INTERVAL = timedelta(seconds=60)
 
 HI_MARK_INTERVAL = timedelta(days=2)
 
-TTL_IN_STATUS = timedelta(hours=2)
+TRACKING_TTL = timedelta(hours=3)
 
 MAX_USER_PHOTOS = 13
 SLADKO_EVERY_NTH_MESSAGE = 77

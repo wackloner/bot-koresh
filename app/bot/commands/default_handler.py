@@ -115,10 +115,10 @@ def default_message_handler(update: Update, context: CallbackContext):
     if sender.username == 'Luckmannn':
         # TODO: store this info in DB
         # TODO: set this feature via command
-        last_hi_o = context.bot_data.get('last_hi_mark', datetime.now())
-        if not last_hi_o or datetime.now(timezone.utc) - last_hi_o > HI_MARK_INTERVAL:
-            reply = message.reply_text('ooh hi Mark)')
-            context.bot_data['last_hi_mark'] = reply.date
+        now = datetime.now()
+        if now - app_context.last_hi_mark_at > HI_MARK_INTERVAL:
+            message.reply_text('ooh hi Mark)')
+            app_context.last_hi_mark_at = now
 
     try:
         coords = extract_coordinates(tokens)

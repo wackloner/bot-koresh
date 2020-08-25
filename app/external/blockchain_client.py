@@ -113,12 +113,13 @@ class BlockchainClient:
         return res
 
     def get_last_unconfirmed_tx(self):
-        res = self.get_unconfirmed_txs()[-1]
+        res = self.get_unconfirmed_txs()[0]
 
         logging.debug(f'last_unconfirmed_tx = {res}')
 
         return res
 
     def get_random_address_with_unconfirmed_tx(self) -> Optional[str]:
+        # TODO: sort by time
         last_tx = self.get_last_unconfirmed_tx()
         return next(filter(None, (out.get('addr', None) for out in last_tx.get('out', {}))), None)
