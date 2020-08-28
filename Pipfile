@@ -17,7 +17,6 @@ pymongo = "*"
 python-telegram-bot = "*"
 PySocks = "*"
 requests = "*"
-tensorflow = "*"
 tqdm = "*"
 
 [dev-packages]
