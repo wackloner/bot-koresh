@@ -27,10 +27,10 @@ class TrackingManager:
         return {t.address: t for t in self.get_all()}
 
     def get_all(self) -> List[Tracking]:
-        return [Tracking.from_dict(d) for d in self.db.find({})]
+        return list(Tracking.from_dict(d) for d in self.db.find({}))
 
     def get_by_chat_id(self, chat_id: int) -> List[Tracking]:
-        return [Tracking.from_dict(d) for d in self.db.find({'chat_id': chat_id})]
+        return list(Tracking.from_dict(d) for d in self.db.find({'chat_id': chat_id}))
 
     def create(self, address: str, chat_id: int, status: AddressStatus, transactions: List[TransactionInfo]):
         now = datetime.now()
