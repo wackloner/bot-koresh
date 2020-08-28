@@ -5,13 +5,9 @@ from datetime import timedelta
 from logging.handlers import TimedRotatingFileHandler
 from typing import Optional
 
-from dotenv import load_dotenv
-
 
 # TODO: refactor to have all the settings in a separate file
 VERSION = '1.4.2'
-
-load_dotenv()
 
 BOT_API_TOKEN = os.environ['BOT_API_TOKEN']
 TRANSLATOR_API_KEY = os.environ.get('TRANSLATOR_API_KEY')

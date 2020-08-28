@@ -7,10 +7,8 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=~/bot-koresh
-ExecStart=python3 ~/bot-koresh/main.py
-
-RestartSec=10
-Restart=always
+ExecStart=~/bot-koresh/scripts/start_bot.sh
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
