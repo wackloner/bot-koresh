@@ -1,21 +1,35 @@
 #!/bin/bash
 
 
+if [ "$(whoami)" != "root" ]; then
+  # otherwise tor won't restart
+  echo "Script must be run as root" && exit 1
+fi
+
+. .env
+
+if [[ -z "${KORESH_HOME}" ]]; then
+  echo "\$KORESH_HOME is not set!" && exit 1
+fi
+
+if [[ -z "${PYTHON_HOME}" ]]; then
+  echo "\$PYTHON_HOME is not set!" && exit 1
+fi
+
 echo
-KORESH_HOME=~/bot-koresh
 echo "KORESH_HOME=$KORESH_HOME"
-SCRIPT_LOG="$KORESH_HOME/.logs/total.log"
-echo "FULL LOG: $SCRIPT_LOG"
 
-"$KORESH_HOME"/scripts/init_tor.sh
+FULL_LOG="$KORESH_HOME/.logs/total.log"
+echo "FULL_LOG=$FULL_LOG"
+
+"$KORESH_HOME"/scripts/init_tor.sh || exit
 echo
 
-"$KORESH_HOME"/scripts/start_mongodb.sh
+"$KORESH_HOME"/scripts/start_mongodb.sh || exit
 echo
 
 while true
 do
-   # TODO: make the command common for all
-   ~/.local/share/virtualenvs/moshnar-bot-vNaJ8oUp/bin/python3.8 "$KORESH_HOME/main.py" | tee -a $SCRIPT_LOG
+   "$PYTHON_HOME"/python3.8 "$KORESH_HOME/main.py" | tee -a "$FULL_LOG"
    sleep 1
 done

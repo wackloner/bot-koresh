@@ -6,8 +6,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/wackloner/bot-koresh
-ExecStart=python3 /home/wackloner/bot-koresh/main.py
+WorkingDirectory=~/bot-koresh
+ExecStart=python3 ~/bot-koresh/main.py
 
 RestartSec=10
 Restart=always

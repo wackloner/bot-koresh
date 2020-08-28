@@ -1,5 +1,4 @@
 #!/bin/bash
 
 echo "Starting MongoDB..."
-sudo systemctl start mongod
-echo "MongoDB is running!"
+sudo systemctl start mongod && echo "MongoDB is running!"
